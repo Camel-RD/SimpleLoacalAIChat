@@ -1,0 +1,43 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34525.116
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LlamaCppLib", "..\llama.cpp-dotnet-master\LlamaCppLib\LlamaCppLib.csproj", "{25D0137C-33F6-479C-AC9F-BC9262D2B6EB}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KlonsLib", "..\KlonsLib\KlonsLib.csproj", "{3FA1EAD8-79D0-4A8D-BFFD-202E2BCAE11D}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "llamacppdll", "..\llamacppdll\llamacppdll.shproj", "{FABF0C0B-0F56-444F-A9EC-8E1B9F286256}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleLoacalAIChat", "SimpleLoacalAIChat.csproj", "{B7ACBA59-9C0A-492F-938B-30BD52F7EB90}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{25D0137C-33F6-479C-AC9F-BC9262D2B6EB}.Debug|x64.ActiveCfg = Debug|x64
+		{25D0137C-33F6-479C-AC9F-BC9262D2B6EB}.Debug|x64.Build.0 = Debug|x64
+		{25D0137C-33F6-479C-AC9F-BC9262D2B6EB}.Release|x64.ActiveCfg = Release|x64
+		{25D0137C-33F6-479C-AC9F-BC9262D2B6EB}.Release|x64.Build.0 = Release|x64
+		{3FA1EAD8-79D0-4A8D-BFFD-202E2BCAE11D}.Debug|x64.ActiveCfg = Debug|x64
+		{3FA1EAD8-79D0-4A8D-BFFD-202E2BCAE11D}.Debug|x64.Build.0 = Debug|x64
+		{3FA1EAD8-79D0-4A8D-BFFD-202E2BCAE11D}.Release|x64.ActiveCfg = Release|x64
+		{3FA1EAD8-79D0-4A8D-BFFD-202E2BCAE11D}.Release|x64.Build.0 = Release|x64
+		{B7ACBA59-9C0A-492F-938B-30BD52F7EB90}.Debug|x64.ActiveCfg = Debug|x64
+		{B7ACBA59-9C0A-492F-938B-30BD52F7EB90}.Debug|x64.Build.0 = Debug|x64
+		{B7ACBA59-9C0A-492F-938B-30BD52F7EB90}.Release|x64.ActiveCfg = Release|x64
+		{B7ACBA59-9C0A-492F-938B-30BD52F7EB90}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {EBC175D4-80A1-490D-AC98-96D133CD2FED}
+	EndGlobalSection
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		..\llamacppdll\llamacppdll.projitems*{b7acba59-9c0a-492f-938b-30bd52f7eb90}*SharedItemsImports = 5
+		..\llamacppdll\llamacppdll.projitems*{fabf0c0b-0f56-444f-a9ec-8e1b9f286256}*SharedItemsImports = 13
+	EndGlobalSection
+EndGlobal

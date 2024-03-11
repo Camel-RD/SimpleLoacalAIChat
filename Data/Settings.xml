@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MySettings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Name>Settings</Name>
+  <ColorThemeId>dark1</ColorThemeId>
+  <FormFontSize>12</FormFontSize>
+  <FormFontName>Microsoft Sans Serif</FormFontName>
+  <FormFontStyle>0</FormFontStyle>
+  <AutoLoadPreset>false</AutoLoadPreset>
+  <SColorDarkRequest>GreenYellow</SColorDarkRequest>
+  <SColorLightRequest>#4D8000</SColorLightRequest>
+  <SColorDarkDebud>SkyBlue</SColorDarkDebud>
+  <SColorLightDebug>#12526D</SColorLightDebug>
+  <ReportZoom>0</ReportZoom>
+  <WindowPos>maximized</WindowPos>
+  <WindowsRect X="-11" Y="-11" Width="1942" Height="1042" />
+</MySettings>
