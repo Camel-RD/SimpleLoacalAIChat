@@ -64,9 +64,13 @@ namespace SimpleLoacalAIChat
             if (ret != "Ok")
             {
                 ShowWarning(ret);
-                return;
             }
             LlmEngine = new LlmEngine(new LlmEngineOptions { MaxParallel = 1 });
+            if (LlmEngine == null)
+            {
+                ShowError("Failed to load LlmEngine, missing 'llama.dll'.");
+                return;
+            }
             var rt = await LoadDefaultPreset();
             IsLoading = false;
         }
@@ -169,6 +173,7 @@ namespace SimpleLoacalAIChat
 
         async Task<bool> LoadDefaultPreset()
         {
+            if (LlmEngine == null) return false;
             string preset_name = null;
             if (!Program.StartUpPresetName.IsNOE())
             {
@@ -190,6 +195,8 @@ namespace SimpleLoacalAIChat
 
         public async Task<bool> ApplyConfigPreset(ConfigPreset preset)
         {
+            if (LlmEngine == null) return false;
+
             if (ActiveConfigPreset != null && ActiveConfigPreset.Equals(preset))
                 return false;
             var rt = MyData.Config.ChatConfig.CheckConfigPreset(preset);
@@ -578,7 +585,8 @@ namespace SimpleLoacalAIChat
         {
             if (bsConfig.Count == 0 || bsConfig.Current == null ||
                 bsConfig.Current is not IConfigItem config_item ||
-                config_item.ItemType != EConfigItemType.Preset)
+                config_item.ItemType != EConfigItemType.Preset ||
+                LlmEngine == null)
                 return;
             var cur_configpreset = bsConfig.Current as ConfigPreset;
             await ApplyConfigPreset(cur_configpreset);

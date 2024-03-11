@@ -9,17 +9,8 @@
     <Import_RootNamespace>llamacppdll</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <None Include="$(MSBuildThisFileDirectory)LlamaCppLib\cublas64_12.dll">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </None>
-    <None Include="$(MSBuildThisFileDirectory)LlamaCppLib\cublasLt64_12.dll">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </None>
-    <None Include="$(MSBuildThisFileDirectory)LlamaCppLib\cudart64_12.dll">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </None>
     <None Include="$(MSBuildThisFileDirectory)LlamaCppLib\llama.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 </Project>
