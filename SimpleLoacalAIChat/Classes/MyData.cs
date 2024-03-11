@@ -16,7 +16,7 @@ namespace SimpleLoacalAIChat
     {
         protected static MyData _MyData = null;
 
-        public static string MyBaseFolder = (new DirectoryInfo(Utils.GetMyFolderX())).Parent.FullName;
+        public static string MyBaseFolder = (new DirectoryInfo(GetMyFolderX())).FullName;
         public static string MyDataFolder = Path.Combine(MyBaseFolder, "Data");
         public static string SettingsFileName = Path.Combine(MyDataFolder, "Settings.xml");
         public static string ConfigFileName = Path.Combine(MyDataFolder, "Config.xml");
@@ -173,6 +173,20 @@ namespace SimpleLoacalAIChat
             }
         }
 
+        public static string GetMyFolderX()
+        {
+            string s1 = Utils.GetMyFolder().ToLower();
+            string s2 = s1.ToLower();
+            string[] ss = new[] {
+                "\\bin\\x64\\debug\\net8.0-windows7.0",
+                "\\bin\\x64\\release\\net8.0-windows7.0",
+            };
+            var p1 = ss.FirstOrDefault(x => s2.EndsWith(x));
+            if (p1 == null) return s1;
+            var projrct_dir_name = s1.Substring(0, s1.Length - p1.Length);
+            var ret = (new DirectoryInfo(projrct_dir_name)).Parent.FullName;
+            return ret;
+        }
 
         #region ============Settings=====================
 
