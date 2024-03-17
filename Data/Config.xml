@@ -44,6 +44,20 @@
         <ThreadCount>4</ThreadCount>
         <BatchThreadCount>1</BatchThreadCount>
       </ConfigPreset>
+      <ConfigPreset>
+        <Name>DeepSeek 1.5</Name>
+        <Model>deepseek-coder-7b-instruct-v1.5-Q4_K_M.gguf</Model>
+        <TemplateName>DeepSeek</TemplateName>
+        <SamplerName>Coder</SamplerName>
+        <SystemPrompt />
+        <GpuLayers>100</GpuLayers>
+        <MainGpu>0</MainGpu>
+        <Seed>-1</Seed>
+        <ContextLength>4096</ContextLength>
+        <BatchSize>64</BatchSize>
+        <ThreadCount>1</ThreadCount>
+        <BatchThreadCount>1</BatchThreadCount>
+      </ConfigPreset>
     </ConfigPresets>
     <PromptTemplates>
       <PromptTemplate>
@@ -62,6 +76,12 @@
         <Name>Phi2</Name>
         <Prompt>User: {0}\n\nAssistant: </Prompt>
         <Response>{0}\n\n</Response>
+      </PromptTemplate>
+      <PromptTemplate>
+        <Name>DeepSeek</Name>
+        <System>You are an AI programming assistant, and you answer questions related to computer science.\n</System>
+        <Prompt>### Instruction:\n{0}\n### Response:\n</Prompt>
+        <Response>{0}\n&lt;|EOT|&gt;\n</Response>
       </PromptTemplate>
     </PromptTemplates>
     <SamplingParams>
@@ -259,6 +279,24 @@
         <MirostatEta>0.1</MirostatEta>
         <PenaltyLastN>1024</PenaltyLastN>
         <PenaltyRepeat>1.15</PenaltyRepeat>
+        <PenaltyFreq>0</PenaltyFreq>
+        <PenaltyPresent>0</PenaltyPresent>
+      </SamplingParams>
+      <SamplingParams>
+        <Name>Coder</Name>
+        <ResponseMaxTokenCount>1024</ResponseMaxTokenCount>
+        <Temperature>0.1</Temperature>
+        <ExtraStopTokens>&lt;|im_end|&gt;</ExtraStopTokens>
+        <TopK>1</TopK>
+        <TopP>1</TopP>
+        <MinP>0</MinP>
+        <TfsZ>1</TfsZ>
+        <TypicalP>1</TypicalP>
+        <Mirostat>Disabled</Mirostat>
+        <MirostatTau>5</MirostatTau>
+        <MirostatEta>0.1</MirostatEta>
+        <PenaltyLastN>1024</PenaltyLastN>
+        <PenaltyRepeat>1</PenaltyRepeat>
         <PenaltyFreq>0</PenaltyFreq>
         <PenaltyPresent>0</PenaltyPresent>
       </SamplingParams>
