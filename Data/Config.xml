@@ -13,13 +13,13 @@
         <Seed>-1</Seed>
         <ContextLength>12000</ContextLength>
         <BatchSize>64</BatchSize>
-        <ThreadCount>1</ThreadCount>
+        <ThreadCount>6</ThreadCount>
         <BatchThreadCount>1</BatchThreadCount>
       </ConfigPreset>
       <ConfigPreset>
-        <Name>Dolphin mistral - grammer</Name>
+        <Name>Dolphin mistral - grammar</Name>
         <Model>dolphin-2.6-mistral-7b.Q4_K_M.gguf</Model>
-        <TemplateName>ChatML-grmmer</TemplateName>
+        <TemplateName>ChatML-grmmar</TemplateName>
         <SamplerName>simple-1</SamplerName>
         <SystemPrompt />
         <GpuLayers>50</GpuLayers>
@@ -27,7 +27,7 @@
         <Seed>-1</Seed>
         <ContextLength>4096</ContextLength>
         <BatchSize>64</BatchSize>
-        <ThreadCount>8</ThreadCount>
+        <ThreadCount>6</ThreadCount>
         <BatchThreadCount>1</BatchThreadCount>
       </ConfigPreset>
       <ConfigPreset>
@@ -40,7 +40,7 @@
         <MainGpu>0</MainGpu>
         <Seed>-1</Seed>
         <ContextLength>2048</ContextLength>
-        <BatchSize>1024</BatchSize>
+        <BatchSize>64</BatchSize>
         <ThreadCount>4</ThreadCount>
         <BatchThreadCount>1</BatchThreadCount>
       </ConfigPreset>
@@ -58,6 +58,20 @@
         <ThreadCount>1</ThreadCount>
         <BatchThreadCount>1</BatchThreadCount>
       </ConfigPreset>
+      <ConfigPreset>
+        <Name>Dolphin mistral</Name>
+        <Model>dolphin-2.6-mistral-7b.Q4_K_M.gguf</Model>
+        <TemplateName>ChatML</TemplateName>
+        <SamplerName>Divine Intellect</SamplerName>
+        <SystemPrompt>You are an assisntant. Answer users questions.</SystemPrompt>
+        <GpuLayers>50</GpuLayers>
+        <MainGpu>0</MainGpu>
+        <Seed>-1</Seed>
+        <ContextLength>4096</ContextLength>
+        <BatchSize>64</BatchSize>
+        <ThreadCount>6</ThreadCount>
+        <BatchThreadCount>1</BatchThreadCount>
+      </ConfigPreset>
     </ConfigPresets>
     <PromptTemplates>
       <PromptTemplate>
@@ -67,7 +81,7 @@
         <Response>{0}&lt;|im_end|&gt;</Response>
       </PromptTemplate>
       <PromptTemplate>
-        <Name>ChatML-grmmer</Name>
+        <Name>ChatML-grmmar</Name>
         <System>&lt;|im_start|&gt;system\nCorrect and rephrase user text grammar errors to casual English.&lt;|im_end|&gt;\n&lt;|im_start|&gt;Text:\nshe no went to market&lt;|im_end|&gt;\n&lt;|im_start|&gt;Output:\nShe didn't go the the market.&lt;|im_end|&gt;</System>
         <Prompt>\n&lt;|im_start|&gt;Text:\n{0}&lt;|im_end|&gt;\n&lt;|im_start|&gt;Output:\n</Prompt>
         <Response>&lt;|im_end|&gt;</Response>
@@ -249,7 +263,7 @@
       </SamplingParams>
       <SamplingParams>
         <Name>Midnight Enigma</Name>
-        <ResponseMaxTokenCount xsi:nil="true" />
+        <ResponseMaxTokenCount>1024</ResponseMaxTokenCount>
         <Temperature>0.98</Temperature>
         <TopK>100</TopK>
         <TopP>0.37</TopP>
@@ -286,7 +300,7 @@
         <Name>Coder</Name>
         <ResponseMaxTokenCount>1024</ResponseMaxTokenCount>
         <Temperature>0.1</Temperature>
-        <ExtraStopTokens>&lt;|im_end|&gt;</ExtraStopTokens>
+        <ExtraStopTokens>&lt;|EOT|&gt;</ExtraStopTokens>
         <TopK>1</TopK>
         <TopP>1</TopP>
         <MinP>0</MinP>

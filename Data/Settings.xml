@@ -11,6 +11,6 @@
   <SColorDarkDebud>SkyBlue</SColorDarkDebud>
   <SColorLightDebug>#12526D</SColorLightDebug>
   <ReportZoom>0</ReportZoom>
-  <WindowPos>maximized</WindowPos>
-  <WindowsRect X="-11" Y="-11" Width="1942" Height="1042" />
+  <WindowPos>normal</WindowPos>
+  <WindowsRect X="104" Y="47" Width="1193" Height="718" />
 </MySettings>

@@ -23,9 +23,6 @@ namespace SimpleLoacalAIChat
 
             tsConfig.Renderer = MainMenuStrip.Renderer;
 
-            CheckMyFontAndColors();
-            CheckMenuColorTheme();
-
             dgvConfig.AutoGenerateColumns = false;
 
             ConfigList = MyData.MakeConfigItemList();
@@ -59,20 +56,29 @@ namespace SimpleLoacalAIChat
         private async void Form1_Shown(object sender, EventArgs e)
         {
             sync_ctx = SynchronizationContext.Current;
+
+            CheckMyFontAndColors();
+            tabPage2.Scale(ScaleFactor);
+            CheckMenuColorTheme();
+
             ApplySetting();
+
             var ret = MyData.Config.ChatConfig.CheckLinks();
             if (ret != "Ok")
             {
                 ShowWarning(ret);
             }
+
             LlmEngine = new LlmEngine(new LlmEngineOptions { MaxParallel = 1 });
             if (LlmEngine == null)
             {
                 ShowError("Failed to load LlmEngine, missing 'llama.dll'.");
                 return;
             }
+
             var rt = await LoadDefaultPreset();
             IsLoading = false;
+            tbPrompt.Focus();
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)

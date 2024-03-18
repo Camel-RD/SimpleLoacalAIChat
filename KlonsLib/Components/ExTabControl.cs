@@ -529,6 +529,7 @@ namespace KlonsLIB.Components
 
         /// <summary>Raises the <see cref="IExControl.DefaultStyleChanged" /> event.</summary>
         protected virtual void OnDefaultStyleChanged() => DefaultStyleChanged?.Invoke(this, EventArgs.Empty);
+       
     }
 
     /// <summary>

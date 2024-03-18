@@ -130,7 +130,9 @@ namespace KlonsLIB.Components
             clickTimer.Stop();
             clickTimer.Tick -= new EventHandler(OnClickTimerTick);
             clickTimer.Dispose();
-            this.FindForm().FormClosing -= My_FormClosing;
+            var frm = this.FindForm();
+            if (frm != null)
+                frm.FormClosing -= My_FormClosing;
             base.DestroyHandle();
         }
 
