@@ -50,7 +50,7 @@ namespace SimpleLoacalAIChat.Models
                 sb.AppendLine($"Model name not set in {configPreset.Name}");
             }
             var model_path = Path.Combine(MyData.MyModelsFolder, configPreset.Model);
-            if (!File.Exists(model_path))
+            if (MyData.Settings.WarnAboutMissingModels && !File.Exists(model_path))
             {
                 sb.AppendLine($"Model file not found in {configPreset.Name}\n   File: {model_path}");
             }

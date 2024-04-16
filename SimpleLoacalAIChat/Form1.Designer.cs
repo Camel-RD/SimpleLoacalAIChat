@@ -84,7 +84,7 @@ namespace SimpleLoacalAIChat
             tbPrompt.Multiline = true;
             tbPrompt.Name = "tbPrompt";
             tbPrompt.ScrollBars = ScrollBars.Both;
-            tbPrompt.Size = new Size(1020, 168);
+            tbPrompt.Size = new Size(1020, 174);
             tbPrompt.TabIndex = 2;
             // 
             // tbOut
@@ -94,7 +94,7 @@ namespace SimpleLoacalAIChat
             tbOut.Dock = DockStyle.Fill;
             tbOut.Location = new Point(0, 0);
             tbOut.Name = "tbOut";
-            tbOut.Size = new Size(1020, 228);
+            tbOut.Size = new Size(1020, 222);
             tbOut.TabIndex = 2;
             tbOut.Text = "";
             // 
@@ -228,7 +228,7 @@ namespace SimpleLoacalAIChat
             // 
             mySplitContainer1.Panel2.Controls.Add(tbPrompt);
             mySplitContainer1.Size = new Size(1020, 406);
-            mySplitContainer1.SplitterDistance = 228;
+            mySplitContainer1.SplitterDistance = 222;
             mySplitContainer1.SplitterWidth = 10;
             mySplitContainer1.TabIndex = 0;
             // 
@@ -305,7 +305,7 @@ namespace SimpleLoacalAIChat
             pgConfig.CommandsVisibleIfAvailable = false;
             pgConfig.Dock = DockStyle.Fill;
             pgConfig.HelpVisible = false;
-            pgConfig.LabelColumnWidth = 250;
+            pgConfig.LabelColumnWidth = 300;
             pgConfig.Location = new Point(0, 0);
             pgConfig.Name = "pgConfig";
             pgConfig.Size = new Size(660, 410);

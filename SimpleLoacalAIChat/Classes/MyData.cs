@@ -4,11 +4,14 @@ using System.ComponentModel;
 using System.Data.Common;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using KlonsLIB;
 using KlonsLIB.Misc;
 using SimpleLoacalAIChat.Models;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace SimpleLoacalAIChat
 {

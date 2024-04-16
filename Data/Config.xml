@@ -72,6 +72,20 @@
         <ThreadCount>6</ThreadCount>
         <BatchThreadCount>1</BatchThreadCount>
       </ConfigPreset>
+      <ConfigPreset>
+        <Name>WizardLM-2-7B</Name>
+        <Model>WizardLM-2-7B.Q4_K_M.gguf</Model>
+        <TemplateName>Vicuna</TemplateName>
+        <SamplerName>Divine Intellect</SamplerName>
+        <SystemPrompt>You are an assisntant. Answer users questions.</SystemPrompt>
+        <GpuLayers>50</GpuLayers>
+        <MainGpu>0</MainGpu>
+        <Seed>-1</Seed>
+        <ContextLength>4096</ContextLength>
+        <BatchSize>64</BatchSize>
+        <ThreadCount>6</ThreadCount>
+        <BatchThreadCount>1</BatchThreadCount>
+      </ConfigPreset>
     </ConfigPresets>
     <PromptTemplates>
       <PromptTemplate>
@@ -96,6 +110,12 @@
         <System>You are an AI programming assistant, and you answer questions related to computer science.\n</System>
         <Prompt>### Instruction:\n{0}\n### Response:\n</Prompt>
         <Response>{0}\n&lt;|EOT|&gt;\n</Response>
+      </PromptTemplate>
+      <PromptTemplate>
+        <Name>Vicuna</Name>
+        <System>{0}\n</System>
+        <Prompt>USER: {0}\nASSISTANT: </Prompt>
+        <Response>{0}&lt;/s&gt;\n</Response>
       </PromptTemplate>
     </PromptTemplates>
     <SamplingParams>
@@ -281,7 +301,7 @@
       <SamplingParams>
         <Name>Strict MinP</Name>
         <ResponseMaxTokenCount>1024</ResponseMaxTokenCount>
-        <Temperature>0.8</Temperature>
+        <Temperature>0.7</Temperature>
         <ExtraStopTokens>&lt;|im_end|&gt;</ExtraStopTokens>
         <TopK>1</TopK>
         <TopP>1</TopP>

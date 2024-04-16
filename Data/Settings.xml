@@ -6,11 +6,12 @@
   <FormFontName>Microsoft Sans Serif</FormFontName>
   <FormFontStyle>0</FormFontStyle>
   <AutoLoadPreset>false</AutoLoadPreset>
+  <WarnAboutMissingModels>false</WarnAboutMissingModels>
   <SColorDarkRequest>GreenYellow</SColorDarkRequest>
   <SColorLightRequest>#4D8000</SColorLightRequest>
   <SColorDarkDebud>SkyBlue</SColorDarkDebud>
   <SColorLightDebug>#12526D</SColorLightDebug>
   <ReportZoom>0</ReportZoom>
-  <WindowPos>normal</WindowPos>
-  <WindowsRect X="104" Y="47" Width="1193" Height="718" />
+  <WindowPos>maximized</WindowPos>
+  <WindowsRect X="-11" Y="-11" Width="1942" Height="1042" />
 </MySettings>

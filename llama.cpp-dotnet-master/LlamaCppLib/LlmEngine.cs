@@ -68,7 +68,13 @@ namespace LlamaCppLib
                 _modelOptions = modelOptions;
 
             if (!_backend.Created)
-                _backend.Create(() => llama_backend_init(_engineOptions.NumaOptimizations), llama_backend_free);
+            {
+                _backend.Create(() =>
+                {
+                    llama_backend_init();
+                    llama_numa_init(_engineOptions.NumaOptimizations ? ggml_numa_strategy.GGML_NUMA_STRATEGY_DISTRIBUTE : ggml_numa_strategy.GGML_NUMA_STRATEGY_DISABLED);
+                }, llama_backend_free);
+            }
 
             var mparams = llama_model_default_params();
             mparams.n_gpu_layers = _modelOptions.GpuLayers;
@@ -134,18 +140,18 @@ namespace LlamaCppLib
         }
 
         [UnmanagedCallersOnly(CallConvs = [typeof(CallConvCdecl)])]
-        private static unsafe byte _ProgressCallback(float progress, void* state)
+        private static unsafe sbyte _ProgressCallback(float progress, void* state)
         {
             var callback = (Action<float>?)GCHandle.FromIntPtr(new(state)).Target;
             callback?.Invoke(progress * 100);
-            return (byte)(true ? 1 : 0);
+            return true ? 1 : 0;
         }
 
         [UnmanagedCallersOnly(CallConvs = [typeof(CallConvCdecl)])]
-        static unsafe byte AbortCallback(void* state)
+        static unsafe sbyte AbortCallback(void* state)
         {
             var cancellationToken = (CancellationToken?)GCHandle.FromIntPtr(new(state)).Target;
-            return (byte)(cancellationToken?.IsCancellationRequested ?? false ? 1 : 0);
+            return (sbyte)(cancellationToken?.IsCancellationRequested ?? false ? 1 : 0);
         }
 
         private void _StartAsync()

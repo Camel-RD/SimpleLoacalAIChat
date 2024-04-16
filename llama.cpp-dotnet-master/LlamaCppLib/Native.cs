@@ -8,6 +8,10 @@ namespace LlamaCppLib
     using llama_pos = System.Int32;
     using llama_seq_id = System.Int32;
 
+    using unsafe llama_progress_callback = delegate* unmanaged[Cdecl]<float, void*, sbyte>;
+    using unsafe ggml_backend_sched_eval_callback = delegate* unmanaged[Cdecl]<nint, sbyte, void*, sbyte>;
+    using unsafe ggml_abort_callback = delegate* unmanaged[Cdecl]<void*, sbyte>;
+
     public static unsafe partial class Native
     {
 #if WINDOWS
@@ -15,6 +19,16 @@ namespace LlamaCppLib
 #elif LINUX || MACOS
         private const string LibName = $"{nameof(LlamaCppLib)}/libllama";
 #endif
+
+        public enum ggml_numa_strategy
+        {
+            GGML_NUMA_STRATEGY_DISABLED = 0,
+            GGML_NUMA_STRATEGY_DISTRIBUTE = 1,
+            GGML_NUMA_STRATEGY_ISOLATE = 2,
+            GGML_NUMA_STRATEGY_NUMACTL = 3,
+            GGML_NUMA_STRATEGY_MIRROR = 4,
+            GGML_NUMA_STRATEGY_COUNT
+        }
 
         public enum llama_vocab_type_t
         {
@@ -32,13 +46,12 @@ namespace LlamaCppLib
             GGML_TYPE_F16 = 1,
             GGML_TYPE_Q4_0 = 2,
             GGML_TYPE_Q4_1 = 3,
-            //GGML_TYPE_Q4_2 = 4, // removed
-            //GGML_TYPE_Q4_3 = 5, // removed
+            // GGML_TYPE_Q4_2 = 4, // removed
+            // GGML_TYPE_Q4_3 = 5, // removed
             GGML_TYPE_Q5_0 = 6,
             GGML_TYPE_Q5_1 = 7,
             GGML_TYPE_Q8_0 = 8,
             GGML_TYPE_Q8_1 = 9,
-            // k-quantizations
             GGML_TYPE_Q2_K = 10,
             GGML_TYPE_Q3_K = 11,
             GGML_TYPE_Q4_K = 12,
@@ -53,18 +66,21 @@ namespace LlamaCppLib
             GGML_TYPE_IQ3_S = 21,
             GGML_TYPE_IQ2_S = 22,
             GGML_TYPE_IQ4_XS = 23,
-            GGML_TYPE_I8,
-            GGML_TYPE_I16,
-            GGML_TYPE_I32,
+            GGML_TYPE_I8 = 24,
+            GGML_TYPE_I16 = 25,
+            GGML_TYPE_I32 = 26,
+            GGML_TYPE_I64 = 27,
+            GGML_TYPE_F64 = 28,
+            GGML_TYPE_IQ1_M = 29,
             GGML_TYPE_COUNT,
-        };
+        }
 
         public enum llama_split_mode
         {
             LLAMA_SPLIT_NONE = 0,
             LLAMA_SPLIT_LAYER = 1,
             LLAMA_SPLIT_ROW = 2,
-        };
+        }
 
         public enum llama_rope_scaling_type
         {
@@ -73,7 +89,7 @@ namespace LlamaCppLib
             LLAMA_ROPE_SCALING_TYPE_LINEAR = 1,
             LLAMA_ROPE_SCALING_TYPE_YARN = 2,
             LLAMA_ROPE_SCALING_TYPE_MAX_VALUE = LLAMA_ROPE_SCALING_TYPE_YARN,
-        };
+        }
 
         public enum llama_pooling_type
         {
@@ -81,15 +97,23 @@ namespace LlamaCppLib
             LLAMA_POOLING_TYPE_NONE = 0,
             LLAMA_POOLING_TYPE_MEAN = 1,
             LLAMA_POOLING_TYPE_CLS = 2,
-        };
+        }
+
+        [StructLayout(LayoutKind.Explicit)]
+        public struct union_d5855d6a
+        {
+            [FieldOffset(0)] public long int_value;
+            [FieldOffset(0)] public double float_value;
+            [FieldOffset(0)] public sbyte bool_value;
+        }
 
         [StructLayout(LayoutKind.Sequential)]
         public struct llama_model_kv_override
         {
-            public char* key; // char[128]
+            public fixed char key[128];
             public llama_model_kv_override_type tag;
-            public void* value; // union { int64_t int_value; double float_value; bool bool_value; };
-        };
+            public union_d5855d6a value;
+        }
 
         [StructLayout(LayoutKind.Sequential)]
         public struct llama_model_params
@@ -100,7 +124,7 @@ namespace LlamaCppLib
             public int main_gpu;
             public float* tensor_split;
 
-            public delegate* unmanaged[Cdecl]<float, void*, byte> progress_callback;
+            public llama_progress_callback progress_callback;
             public void* progress_callback_user_data;
 
             public llama_model_kv_override* kv_overrides;
@@ -133,7 +157,7 @@ namespace LlamaCppLib
             public uint yarn_orig_ctx;
             public float defrag_thold;
 
-            public delegate* unmanaged[Cdecl]<nint, byte, void*, byte> cb_eval;
+            public ggml_backend_sched_eval_callback cb_eval;
             public void* cb_eval_user_data;
 
             public ggml_type type_k;
@@ -143,7 +167,7 @@ namespace LlamaCppLib
             public byte embeddings;
             public byte offload_kqv;
 
-            public delegate* unmanaged[Cdecl]<void*, byte> abort_callback;
+            public ggml_abort_callback abort_callback;
             public void* abort_callback_data;
         }
 
@@ -187,8 +211,11 @@ namespace LlamaCppLib
         public static partial llama_context_params llama_context_default_params();
 
         [LibraryImport(LibName)]
-        public static partial void llama_backend_init(
-            [MarshalAs(UnmanagedType.I1)] bool numa);
+        public static partial void llama_backend_init();
+
+        [LibraryImport(LibName)]
+        public static partial void llama_numa_init(
+            ggml_numa_strategy numa);
 
         [LibraryImport(LibName)]
         public static partial void llama_backend_free();
@@ -244,6 +271,10 @@ namespace LlamaCppLib
             llama_model model);
 
         [LibraryImport(LibName)]
+        public static partial int llama_n_layer(
+            llama_model model);
+
+        [LibraryImport(LibName)]
         public static partial llama_model llama_get_model(
             llama_context ctx);
 
@@ -274,12 +305,12 @@ namespace LlamaCppLib
         [LibraryImport(LibName)]
         public static partial int llama_tokenize(
             llama_model model,
-            byte[] text,
+            [MarshalAs(UnmanagedType.LPStr)] string text,
             int text_len,
             llama_token[] tokens,
             int n_tokens_max,
-            byte add_bos,
-            byte special);
+            [MarshalAs(UnmanagedType.I1)] bool add_bos,
+            [MarshalAs(UnmanagedType.I1)] bool special);
 
         [LibraryImport(LibName)]
         public static partial int llama_token_to_piece(
@@ -319,6 +350,11 @@ namespace LlamaCppLib
         public static partial int llama_decode(
             llama_context ctx,
             llama_batch batch);
+
+        [LibraryImport(LibName)]
+        public static partial void llama_set_causal_attn(
+            llama_context ctx,
+            [MarshalAs(UnmanagedType.I1)] bool causal_attn);
 
         [LibraryImport(LibName)]
         public static partial void llama_synchronize(

@@ -196,6 +196,8 @@ namespace SimpleLoacalAIChat.Models
         [Editor(typeof(KlonsLIB.Components.MyDropDownPropertyEditor), typeof(System.Drawing.Design.UITypeEditor))]
         public string AutoLoadPresetName { get; set; }
 
+        [Category("Behaviour")]
+        public bool WarnAboutMissingModels { get; set; } = false;
 
         [Category("Colors")]
         [DefaultValue(typeof(Color), "GreenYellow")]

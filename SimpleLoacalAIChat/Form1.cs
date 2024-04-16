@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Windows.Forms.Design;
 using static System.Net.Mime.MediaTypeNames;
 using System.Text;
+using SimpleLoacalAIChat.Classes;
 
 namespace SimpleLoacalAIChat
 {
@@ -221,15 +222,17 @@ namespace SimpleLoacalAIChat
 
             if (!ShouldReloadModel(prev_config, preset))
                 return true;
-            if (LlmEngine.Loaded)
-            {
-                LlmEngine.UnloadModel();
-            }
+
             var fnm = ActiveConfigPreset.ChatConfig.GetModelFullFileNmae(ActiveConfigPreset.Model);
             if (fnm.IsNOE())
             {
                 ShowError($"File not found {ActiveConfigPreset.Model}");
                 return false;
+            }
+
+            if (LlmEngine.Loaded)
+            {
+                LlmEngine.UnloadModel();
             }
             var rb = await LoadModel(fnm);
             return rb;
@@ -538,7 +541,8 @@ namespace SimpleLoacalAIChat
                 pgConfig.SelectedObject = null;
                 return;
             }
-            pgConfig.SelectedObject = bsConfig.Current;
+            var td = new ModelTypeDescriptor(bsConfig.Current);
+            pgConfig.SelectedObject = td;
             tsbConfigLoad.Visible = config_item.ItemType == EConfigItemType.Preset;
         }
 

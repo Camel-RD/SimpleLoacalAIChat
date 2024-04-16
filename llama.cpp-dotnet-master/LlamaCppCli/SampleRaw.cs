@@ -27,17 +27,17 @@ namespace LlamaCppCli
         }
 
         [UnmanagedCallersOnly(CallConvs = [typeof(CallConvCdecl)])]
-        static unsafe byte ProgressCallback(float progress, void* state)
+        static unsafe sbyte ProgressCallback(float progress, void* state)
         {
             Console.Write($"{new string(' ', 32)}\rLoading model... {(byte)(progress * 100)}%\r");
-            return (byte)(true ? 1 : 0);
+            return true ? 1 : 0;
         }
 
         [UnmanagedCallersOnly(CallConvs = [typeof(CallConvCdecl)])]
-        static unsafe byte AbortCallback(void* state)
+        static unsafe sbyte AbortCallback(void* state)
         {
             var cancel = (bool?)GCHandle.FromIntPtr(new(state)).Target ?? false;
-            return (byte)(cancel ? 1 : 0);
+            return (sbyte)(cancel ? 1 : 0);
         }
 
         static unsafe void RunSampleRaw(string[] args)
@@ -96,7 +96,8 @@ namespace LlamaCppCli
             //cparams.type_v = ggml_type.GGML_TYPE_F16;
             //cparams.logits_all = false ? 1 : 0;
 
-            llama_backend_init(false);
+            llama_backend_init();
+            llama_numa_init(ggml_numa_strategy.GGML_NUMA_STRATEGY_DISABLED);
 
             var mdl = llama_load_model_from_file(args[0], mparams);
             var ctx = llama_new_context_with_model(mdl, cparams);

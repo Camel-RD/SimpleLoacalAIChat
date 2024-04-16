@@ -18,14 +18,24 @@ namespace KlonsLIB.Components
 
         public override object EditValue(ITypeDescriptorContext context, IServiceProvider provider, object value)
         {
+            if (context.PropertyDescriptor == null) return value;
             _editorService = (IWindowsFormsEditorService)provider.GetService(typeof(IWindowsFormsEditorService));
 
             ListBox lb = new ListBox();
             lb.SelectionMode = SelectionMode.One;
             lb.SelectedValueChanged += OnListBoxSelectedValueChanged;
-            
-            var listprov = context.Instance as IMyPropertyValueListProvider;
-            if (listprov == null || context.PropertyDescriptor == null) return value;
+
+            IMyPropertyValueListProvider listprov = null;
+            if (context.Instance is ICustomTypeDescriptor ctd)
+            {
+                listprov = ctd.GetPropertyOwner(context.PropertyDescriptor) as IMyPropertyValueListProvider;
+            }
+            else
+            {
+                listprov = context.Instance as IMyPropertyValueListProvider;
+            }
+
+            if (listprov == null) return value;
             var list = listprov.GetPropertyValueList(context.PropertyDescriptor.Name);
             if (list == null) return value;
             foreach (string s in list)
