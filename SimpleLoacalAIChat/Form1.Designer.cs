@@ -59,6 +59,7 @@ namespace SimpleLoacalAIChat
             tsbConfigDelete = new ToolStripButton();
             tsbConfigSave = new ToolStripButton();
             tsbConfigLoad = new ToolStripButton();
+            miModelMetaData = new ToolStripMenuItem();
             statusStrip1.SuspendLayout();
             toolStrip1.SuspendLayout();
             exTabControl1.SuspendLayout();
@@ -84,7 +85,7 @@ namespace SimpleLoacalAIChat
             tbPrompt.Multiline = true;
             tbPrompt.Name = "tbPrompt";
             tbPrompt.ScrollBars = ScrollBars.Both;
-            tbPrompt.Size = new Size(1020, 174);
+            tbPrompt.Size = new Size(1020, 180);
             tbPrompt.TabIndex = 2;
             // 
             // tbOut
@@ -94,7 +95,7 @@ namespace SimpleLoacalAIChat
             tbOut.Dock = DockStyle.Fill;
             tbOut.Location = new Point(0, 0);
             tbOut.Name = "tbOut";
-            tbOut.Size = new Size(1020, 222);
+            tbOut.Size = new Size(1020, 216);
             tbOut.TabIndex = 2;
             tbOut.Text = "";
             // 
@@ -142,7 +143,7 @@ namespace SimpleLoacalAIChat
             // 
             toolStrip1.Dock = DockStyle.Bottom;
             toolStrip1.ImageScalingSize = new Size(24, 24);
-            toolStrip1.Items.AddRange(new ToolStripItem[] { tsbAsk, tsbContinue, tsbCancel, miDebugPrompt });
+            toolStrip1.Items.AddRange(new ToolStripItem[] { tsbAsk, tsbContinue, tsbCancel, miDebugPrompt, miModelMetaData });
             toolStrip1.Location = new Point(3, 409);
             toolStrip1.Name = "toolStrip1";
             toolStrip1.Size = new Size(1020, 43);
@@ -228,7 +229,7 @@ namespace SimpleLoacalAIChat
             // 
             mySplitContainer1.Panel2.Controls.Add(tbPrompt);
             mySplitContainer1.Size = new Size(1020, 406);
-            mySplitContainer1.SplitterDistance = 222;
+            mySplitContainer1.SplitterDistance = 216;
             mySplitContainer1.SplitterWidth = 10;
             mySplitContainer1.TabIndex = 0;
             // 
@@ -368,6 +369,14 @@ namespace SimpleLoacalAIChat
             tsbConfigLoad.Text = "Load Preset";
             tsbConfigLoad.Click += tsbConfigLoad_Click;
             // 
+            // miModelMetaData
+            // 
+            miModelMetaData.Alignment = ToolStripItemAlignment.Right;
+            miModelMetaData.Name = "miModelMetaData";
+            miModelMetaData.Size = new Size(198, 39);
+            miModelMetaData.Text = "Model Meta Data";
+            miModelMetaData.Click += miModelMetaData_Click;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(12F, 30F);
@@ -435,5 +444,6 @@ namespace SimpleLoacalAIChat
         private ToolStripStatusLabel tslPreset;
         private ToolStripMenuItem miDebugPrompt;
         private ToolStripButton tsbConfigSave;
+        private ToolStripMenuItem miModelMetaData;
     }
 }

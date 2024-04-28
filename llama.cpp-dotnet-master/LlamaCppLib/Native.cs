@@ -38,7 +38,13 @@ namespace LlamaCppLib
             LLAMA_VOCAB_TYPE_WPM = 3,
         }
 
-        public enum llama_model_kv_override_type { LLAMA_KV_OVERRIDE_INT, LLAMA_KV_OVERRIDE_FLOAT, LLAMA_KV_OVERRIDE_BOOL };
+        public enum llama_model_kv_override_type
+        {
+            LLAMA_KV_OVERRIDE_TYPE_INT,
+            LLAMA_KV_OVERRIDE_TYPE_FLOAT,
+            LLAMA_KV_OVERRIDE_TYPE_BOOL,
+            LLAMA_KV_OVERRIDE_TYPE_STR,
+        };
 
         public enum ggml_type
         {
@@ -100,19 +106,20 @@ namespace LlamaCppLib
         }
 
         [StructLayout(LayoutKind.Explicit)]
-        public struct union_d5855d6a
+        public struct llama_model_kv_override_value
         {
-            [FieldOffset(0)] public long int_value;
-            [FieldOffset(0)] public double float_value;
-            [FieldOffset(0)] public sbyte bool_value;
+            [FieldOffset(0)] public long val_i64;
+            [FieldOffset(0)] public double val_f64;
+            [FieldOffset(0)] public sbyte val_bool;
+            [FieldOffset(0)] public fixed byte val_str[128];
         }
 
         [StructLayout(LayoutKind.Sequential)]
         public struct llama_model_kv_override
         {
-            public fixed char key[128];
             public llama_model_kv_override_type tag;
-            public union_d5855d6a value;
+            public fixed byte key[128];
+            public llama_model_kv_override_value value;
         }
 
         [StructLayout(LayoutKind.Sequential)]
@@ -129,9 +136,10 @@ namespace LlamaCppLib
 
             public llama_model_kv_override* kv_overrides;
 
-            public byte vocab_only;
-            public byte use_mmap;
-            public byte use_mlock;
+            public sbyte vocab_only;
+            public sbyte use_mmap;
+            public sbyte use_mlock;
+            public sbyte check_tensors;
         }
 
         [StructLayout(LayoutKind.Sequential)]
@@ -163,9 +171,9 @@ namespace LlamaCppLib
             public ggml_type type_k;
             public ggml_type type_v;
 
-            public byte logits_all;
-            public byte embeddings;
-            public byte offload_kqv;
+            public sbyte logits_all;
+            public sbyte embeddings;
+            public sbyte offload_kqv;
 
             public ggml_abort_callback abort_callback;
             public void* abort_callback_data;
@@ -201,7 +209,7 @@ namespace LlamaCppLib
         {
             public llama_token_data* data;
             public nuint size;
-            public byte sorted;
+            public sbyte sorted;
         }
 
         [LibraryImport(LibName)]
@@ -223,7 +231,7 @@ namespace LlamaCppLib
         [LibraryImport(LibName)]
         public static partial llama_model llama_load_model_from_file(
             [MarshalAs(UnmanagedType.LPStr)] string path_model,
-            llama_model_params cparams);
+            llama_model_params mparams);
 
         [LibraryImport(LibName)]
         public static partial void llama_free_model(
@@ -305,19 +313,26 @@ namespace LlamaCppLib
         [LibraryImport(LibName)]
         public static partial int llama_tokenize(
             llama_model model,
-            [MarshalAs(UnmanagedType.LPStr)] string text,
+            [In] byte[] text,
             int text_len,
-            llama_token[] tokens,
+            [In, Out] llama_token[] tokens,
             int n_tokens_max,
-            [MarshalAs(UnmanagedType.I1)] bool add_bos,
-            [MarshalAs(UnmanagedType.I1)] bool special);
+            [MarshalAs(UnmanagedType.I1)] bool add_special,
+            [MarshalAs(UnmanagedType.I1)] bool parse_special);
 
         [LibraryImport(LibName)]
         public static partial int llama_token_to_piece(
             llama_model model,
             llama_token token,
-            byte[] buf,
-            int length);
+            [In, Out] byte[] buf,
+            int length,
+            [MarshalAs(UnmanagedType.I1)] bool special);
+
+        [LibraryImport(LibName)]
+        [return: MarshalAs(UnmanagedType.I1)]
+        public static partial bool llama_token_is_eog(
+            llama_model model,
+            llama_token token);
 
         [LibraryImport(LibName)]
         public static partial llama_token llama_token_eos(
@@ -340,7 +355,8 @@ namespace LlamaCppLib
             llama_context ctx);
 
         [LibraryImport(LibName)]
-        public static partial byte llama_kv_cache_seq_rm(
+        [return : MarshalAs(UnmanagedType.I1)]
+        public static partial bool llama_kv_cache_seq_rm(
             llama_context ctx,
             llama_seq_id seq_id,
             llama_pos p0,

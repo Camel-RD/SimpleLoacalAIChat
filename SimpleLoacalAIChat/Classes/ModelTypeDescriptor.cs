@@ -41,7 +41,7 @@ namespace SimpleLoacalAIChat.Classes
         public string SplitPascalCaseString(string str)
         {
             if (str.IsNOE()) return str;
-            var result = str.SelectMany((c, i) => i != 0 && char.IsUpper(c) && !char.IsUpper(str[i - 1]) ? new char[] { ' ', c } : new char[] { c });
+            var result = str.SelectMany((c, i) => i != 0 && i < str.Length-1 && char.IsUpper(c) && !char.IsUpper(str[i - 1]) ? new char[] { ' ', c } : new char[] { c });
             return new string(result.ToArray());
         }
 

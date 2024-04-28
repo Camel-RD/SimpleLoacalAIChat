@@ -12,7 +12,7 @@
         <MainGpu>0</MainGpu>
         <Seed>-1</Seed>
         <ContextLength>12000</ContextLength>
-        <BatchSize>64</BatchSize>
+        <BatchSize>1024</BatchSize>
         <ThreadCount>6</ThreadCount>
         <BatchThreadCount>1</BatchThreadCount>
       </ConfigPreset>
@@ -26,21 +26,21 @@
         <MainGpu>0</MainGpu>
         <Seed>-1</Seed>
         <ContextLength>4096</ContextLength>
-        <BatchSize>64</BatchSize>
+        <BatchSize>1204</BatchSize>
         <ThreadCount>6</ThreadCount>
         <BatchThreadCount>1</BatchThreadCount>
       </ConfigPreset>
       <ConfigPreset>
         <Name>Dolphin Phi-2</Name>
         <Model>dolphin-2_6-phi-2.Q5_K_M.gguf</Model>
-        <TemplateName>ChatML</TemplateName>
+        <TemplateName>Phi2</TemplateName>
         <SamplerName>simple-1</SamplerName>
         <SystemPrompt>You are an assisntant. Answer users questions.</SystemPrompt>
         <GpuLayers>50</GpuLayers>
         <MainGpu>0</MainGpu>
         <Seed>-1</Seed>
         <ContextLength>2048</ContextLength>
-        <BatchSize>64</BatchSize>
+        <BatchSize>512</BatchSize>
         <ThreadCount>4</ThreadCount>
         <BatchThreadCount>1</BatchThreadCount>
       </ConfigPreset>
@@ -54,7 +54,7 @@
         <MainGpu>0</MainGpu>
         <Seed>-1</Seed>
         <ContextLength>4096</ContextLength>
-        <BatchSize>64</BatchSize>
+        <BatchSize>1024</BatchSize>
         <ThreadCount>1</ThreadCount>
         <BatchThreadCount>1</BatchThreadCount>
       </ConfigPreset>
@@ -68,7 +68,7 @@
         <MainGpu>0</MainGpu>
         <Seed>-1</Seed>
         <ContextLength>4096</ContextLength>
-        <BatchSize>64</BatchSize>
+        <BatchSize>1024</BatchSize>
         <ThreadCount>6</ThreadCount>
         <BatchThreadCount>1</BatchThreadCount>
       </ConfigPreset>
@@ -78,12 +78,40 @@
         <TemplateName>Vicuna</TemplateName>
         <SamplerName>Divine Intellect</SamplerName>
         <SystemPrompt>You are an assisntant. Answer users questions.</SystemPrompt>
+        <GpuLayers>25</GpuLayers>
+        <MainGpu>0</MainGpu>
+        <Seed>-1</Seed>
+        <ContextLength>4096</ContextLength>
+        <BatchSize>1024</BatchSize>
+        <ThreadCount>6</ThreadCount>
+        <BatchThreadCount>1</BatchThreadCount>
+      </ConfigPreset>
+      <ConfigPreset>
+        <Name>Llama 3</Name>
+        <Model>Meta-Llama-3-8B-Instruct-Q4_K_M.gguf</Model>
+        <TemplateName>Llama 3</TemplateName>
+        <SamplerName>Mirostat</SamplerName>
+        <SystemPrompt>You are a helpful assistant.</SystemPrompt>
+        <GpuLayers>50</GpuLayers>
+        <MainGpu>0</MainGpu>
+        <Seed>-1</Seed>
+        <ContextLength>8192</ContextLength>
+        <BatchSize>1024</BatchSize>
+        <ThreadCount>6</ThreadCount>
+        <BatchThreadCount>1</BatchThreadCount>
+      </ConfigPreset>
+      <ConfigPreset>
+        <Name>MS Phi-3</Name>
+        <Model>Phi-3-mini-4k-instruct-Q4_K_M.gguf</Model>
+        <TemplateName>Phi3</TemplateName>
+        <SamplerName>simple-1</SamplerName>
+        <SystemPrompt>You are a helpful AI assistant.</SystemPrompt>
         <GpuLayers>50</GpuLayers>
         <MainGpu>0</MainGpu>
         <Seed>-1</Seed>
         <ContextLength>4096</ContextLength>
-        <BatchSize>64</BatchSize>
-        <ThreadCount>6</ThreadCount>
+        <BatchSize>512</BatchSize>
+        <ThreadCount>4</ThreadCount>
         <BatchThreadCount>1</BatchThreadCount>
       </ConfigPreset>
     </ConfigPresets>
@@ -93,29 +121,54 @@
         <System>&lt;|im_start|&gt;system\n{0}&lt;|im_end|&gt;</System>
         <Prompt>\n&lt;|im_start|&gt;user\n{0}&lt;|im_end|&gt;\n&lt;|im_start|&gt;assistant\n</Prompt>
         <Response>{0}&lt;|im_end|&gt;</Response>
+        <ExtraStopTokens>&lt;|im_end|&gt;</ExtraStopTokens>
+        <PrependBosToken xsi:nil="true" />
       </PromptTemplate>
       <PromptTemplate>
         <Name>ChatML-grmmar</Name>
         <System>&lt;|im_start|&gt;system\nCorrect and rephrase user text grammar errors to casual English.&lt;|im_end|&gt;\n&lt;|im_start|&gt;Text:\nshe no went to market&lt;|im_end|&gt;\n&lt;|im_start|&gt;Output:\nShe didn't go the the market.&lt;|im_end|&gt;</System>
         <Prompt>\n&lt;|im_start|&gt;Text:\n{0}&lt;|im_end|&gt;\n&lt;|im_start|&gt;Output:\n</Prompt>
         <Response>&lt;|im_end|&gt;</Response>
+        <ExtraStopTokens>&lt;|im_end|&gt;</ExtraStopTokens>
+        <PrependBosToken xsi:nil="true" />
       </PromptTemplate>
       <PromptTemplate>
         <Name>Phi2</Name>
+        <System>System: {0}\n</System>
         <Prompt>User: {0}\n\nAssistant: </Prompt>
-        <Response>{0}\n\n</Response>
+        <Response>{0}\n</Response>
+        <PrependBosToken xsi:nil="true" />
       </PromptTemplate>
       <PromptTemplate>
         <Name>DeepSeek</Name>
         <System>You are an AI programming assistant, and you answer questions related to computer science.\n</System>
         <Prompt>### Instruction:\n{0}\n### Response:\n</Prompt>
         <Response>{0}\n&lt;|EOT|&gt;\n</Response>
+        <PrependBosToken xsi:nil="true" />
       </PromptTemplate>
       <PromptTemplate>
         <Name>Vicuna</Name>
         <System>{0}\n</System>
         <Prompt>USER: {0}\nASSISTANT: </Prompt>
-        <Response>{0}&lt;/s&gt;\n</Response>
+        <Response>{0}\n</Response>
+        <PrependBosToken xsi:nil="true" />
+      </PromptTemplate>
+      <PromptTemplate>
+        <Name>Llama 3</Name>
+        <System>&lt;|begin_of_text|&gt;&lt;|start_header_id|&gt;system&lt;|end_header_id|&gt;\n\n{0}&lt;|eot_id|&gt;</System>
+        <Prompt>&lt;|start_header_id|&gt;user&lt;|end_header_id|&gt;\n\n{0}&lt;|eot_id|&gt;&lt;|start_header_id|&gt;assistant&lt;|end_header_id|&gt;\n\n</Prompt>
+        <Response>{0}&lt;|eot_id|&gt;</Response>
+        <ExtraStopTokens>&lt;|eot_id|&gt;</ExtraStopTokens>
+        <PrependBosToken xsi:nil="true" />
+        <ProcessSpecialTokens>false</ProcessSpecialTokens>
+      </PromptTemplate>
+      <PromptTemplate>
+        <Name>Phi3</Name>
+        <System>&lt;|system|&gt;\n{0}&lt;|end|&gt;\n</System>
+        <Prompt>&lt;|user|&gt;\n{0}&lt;|end|&gt;\n&lt;|assistant|&gt;\n</Prompt>
+        <Response>{0}&lt;|end|&gt;\n</Response>
+        <ExtraStopTokens>&lt;|end|&gt;, &lt;|assistant|&gt;</ExtraStopTokens>
+        <PrependBosToken>true</PrependBosToken>
       </PromptTemplate>
     </PromptTemplates>
     <SamplingParams>
@@ -123,7 +176,6 @@
         <Name>Divine Intellect</Name>
         <ResponseMaxTokenCount>1024</ResponseMaxTokenCount>
         <Temperature>1.31</Temperature>
-        <ExtraStopTokens>&lt;|im_end|&gt;</ExtraStopTokens>
         <TopK>49</TopK>
         <TopP>0.14</TopP>
         <MinP>0</MinP>
@@ -132,7 +184,7 @@
         <Mirostat>Disabled</Mirostat>
         <MirostatTau>5</MirostatTau>
         <MirostatEta>0.1</MirostatEta>
-        <PenaltyLastN>1024</PenaltyLastN>
+        <PenaltyLastN>64</PenaltyLastN>
         <PenaltyRepeat>1.17</PenaltyRepeat>
         <PenaltyFreq>0</PenaltyFreq>
         <PenaltyPresent>0</PenaltyPresent>
@@ -141,7 +193,6 @@
         <Name>LLaMA-Precise</Name>
         <ResponseMaxTokenCount>1024</ResponseMaxTokenCount>
         <Temperature>0.7</Temperature>
-        <ExtraStopTokens>&lt;|im_end|&gt;</ExtraStopTokens>
         <TopK>40</TopK>
         <TopP>0.1</TopP>
         <MinP>0</MinP>
@@ -150,7 +201,7 @@
         <Mirostat>Disabled</Mirostat>
         <MirostatTau>5</MirostatTau>
         <MirostatEta>0.1</MirostatEta>
-        <PenaltyLastN>1024</PenaltyLastN>
+        <PenaltyLastN>64</PenaltyLastN>
         <PenaltyRepeat>1.18</PenaltyRepeat>
         <PenaltyFreq>0</PenaltyFreq>
         <PenaltyPresent>0</PenaltyPresent>
@@ -159,7 +210,6 @@
         <Name>simple-1</Name>
         <ResponseMaxTokenCount>1024</ResponseMaxTokenCount>
         <Temperature>0.7</Temperature>
-        <ExtraStopTokens>&lt;|im_end|&gt;</ExtraStopTokens>
         <TopK>20</TopK>
         <TopP>0.9</TopP>
         <MinP>0</MinP>
@@ -168,7 +218,7 @@
         <Mirostat>Disabled</Mirostat>
         <MirostatTau>5</MirostatTau>
         <MirostatEta>0.1</MirostatEta>
-        <PenaltyLastN>1024</PenaltyLastN>
+        <PenaltyLastN>64</PenaltyLastN>
         <PenaltyRepeat>1.15</PenaltyRepeat>
         <PenaltyFreq>0</PenaltyFreq>
         <PenaltyPresent>0</PenaltyPresent>
@@ -177,7 +227,6 @@
         <Name>Big O</Name>
         <ResponseMaxTokenCount>1024</ResponseMaxTokenCount>
         <Temperature>0.87</Temperature>
-        <ExtraStopTokens>&lt;|im_end|&gt;</ExtraStopTokens>
         <TopK>85</TopK>
         <TopP>0.99</TopP>
         <MinP>0</MinP>
@@ -186,7 +235,7 @@
         <Mirostat>Disabled</Mirostat>
         <MirostatTau>5</MirostatTau>
         <MirostatEta>0.1</MirostatEta>
-        <PenaltyLastN>1024</PenaltyLastN>
+        <PenaltyLastN>64</PenaltyLastN>
         <PenaltyRepeat>1.01</PenaltyRepeat>
         <PenaltyFreq>0</PenaltyFreq>
         <PenaltyPresent>0</PenaltyPresent>
@@ -195,7 +244,6 @@
         <Name>Debug-deterministic</Name>
         <ResponseMaxTokenCount>1024</ResponseMaxTokenCount>
         <Temperature>1</Temperature>
-        <ExtraStopTokens>&lt;|im_end|&gt;</ExtraStopTokens>
         <TopK>1</TopK>
         <TopP>1</TopP>
         <MinP>0</MinP>
@@ -204,7 +252,7 @@
         <Mirostat>Disabled</Mirostat>
         <MirostatTau>5</MirostatTau>
         <MirostatEta>0.1</MirostatEta>
-        <PenaltyLastN>1024</PenaltyLastN>
+        <PenaltyLastN>0</PenaltyLastN>
         <PenaltyRepeat>1</PenaltyRepeat>
         <PenaltyFreq>0</PenaltyFreq>
         <PenaltyPresent>0</PenaltyPresent>
@@ -213,7 +261,6 @@
         <Name>Contrastive Search</Name>
         <ResponseMaxTokenCount>1024</ResponseMaxTokenCount>
         <Temperature>1</Temperature>
-        <ExtraStopTokens>&lt;|im_end|&gt;</ExtraStopTokens>
         <TopK>4</TopK>
         <TopP>1</TopP>
         <MinP>0</MinP>
@@ -222,7 +269,7 @@
         <Mirostat>Disabled</Mirostat>
         <MirostatTau>5</MirostatTau>
         <MirostatEta>0.1</MirostatEta>
-        <PenaltyLastN>1024</PenaltyLastN>
+        <PenaltyLastN>0</PenaltyLastN>
         <PenaltyRepeat>1</PenaltyRepeat>
         <PenaltyFreq>0</PenaltyFreq>
         <PenaltyPresent>0</PenaltyPresent>
@@ -231,7 +278,6 @@
         <Name>Yara</Name>
         <ResponseMaxTokenCount>1024</ResponseMaxTokenCount>
         <Temperature>0.82</Temperature>
-        <ExtraStopTokens>&lt;|im_end|&gt;</ExtraStopTokens>
         <TopK>72</TopK>
         <TopP>0.21</TopP>
         <MinP>0</MinP>
@@ -249,7 +295,6 @@
         <Name>Shortwave</Name>
         <ResponseMaxTokenCount>1024</ResponseMaxTokenCount>
         <Temperature>1.53</Temperature>
-        <ExtraStopTokens>&lt;|im_end|&gt;</ExtraStopTokens>
         <TopK>33</TopK>
         <TopP>0.64</TopP>
         <MinP>0.95</MinP>
@@ -258,7 +303,7 @@
         <Mirostat>Disabled</Mirostat>
         <MirostatTau>5</MirostatTau>
         <MirostatEta>0.1</MirostatEta>
-        <PenaltyLastN>1024</PenaltyLastN>
+        <PenaltyLastN>64</PenaltyLastN>
         <PenaltyRepeat>1.07</PenaltyRepeat>
         <PenaltyFreq>0</PenaltyFreq>
         <PenaltyPresent>0</PenaltyPresent>
@@ -267,7 +312,6 @@
         <Name>Divine Intellect 2</Name>
         <ResponseMaxTokenCount>1024</ResponseMaxTokenCount>
         <Temperature>1.31</Temperature>
-        <ExtraStopTokens>&lt;|im_end|&gt;</ExtraStopTokens>
         <TopK>49</TopK>
         <TopP>0.14</TopP>
         <MinP>0.05</MinP>
@@ -293,7 +337,7 @@
         <Mirostat>Disabled</Mirostat>
         <MirostatTau>5</MirostatTau>
         <MirostatEta>0.1</MirostatEta>
-        <PenaltyLastN>1024</PenaltyLastN>
+        <PenaltyLastN>64</PenaltyLastN>
         <PenaltyRepeat>1.18</PenaltyRepeat>
         <PenaltyFreq>0</PenaltyFreq>
         <PenaltyPresent>0</PenaltyPresent>
@@ -302,7 +346,6 @@
         <Name>Strict MinP</Name>
         <ResponseMaxTokenCount>1024</ResponseMaxTokenCount>
         <Temperature>0.7</Temperature>
-        <ExtraStopTokens>&lt;|im_end|&gt;</ExtraStopTokens>
         <TopK>1</TopK>
         <TopP>1</TopP>
         <MinP>0.1</MinP>
@@ -311,7 +354,7 @@
         <Mirostat>Disabled</Mirostat>
         <MirostatTau>5</MirostatTau>
         <MirostatEta>0.1</MirostatEta>
-        <PenaltyLastN>1024</PenaltyLastN>
+        <PenaltyLastN>64</PenaltyLastN>
         <PenaltyRepeat>1.15</PenaltyRepeat>
         <PenaltyFreq>0</PenaltyFreq>
         <PenaltyPresent>0</PenaltyPresent>
@@ -320,7 +363,6 @@
         <Name>Coder</Name>
         <ResponseMaxTokenCount>1024</ResponseMaxTokenCount>
         <Temperature>0.1</Temperature>
-        <ExtraStopTokens>&lt;|EOT|&gt;</ExtraStopTokens>
         <TopK>1</TopK>
         <TopP>1</TopP>
         <MinP>0</MinP>
@@ -329,7 +371,24 @@
         <Mirostat>Disabled</Mirostat>
         <MirostatTau>5</MirostatTau>
         <MirostatEta>0.1</MirostatEta>
-        <PenaltyLastN>1024</PenaltyLastN>
+        <PenaltyLastN>0</PenaltyLastN>
+        <PenaltyRepeat>1</PenaltyRepeat>
+        <PenaltyFreq>0</PenaltyFreq>
+        <PenaltyPresent>0</PenaltyPresent>
+      </SamplingParams>
+      <SamplingParams>
+        <Name>Mirostat</Name>
+        <ResponseMaxTokenCount>1024</ResponseMaxTokenCount>
+        <Temperature>0.8</Temperature>
+        <TopK>40</TopK>
+        <TopP>0.95</TopP>
+        <MinP>0.05</MinP>
+        <TfsZ>1</TfsZ>
+        <TypicalP>1</TypicalP>
+        <Mirostat>MirostatV2</Mirostat>
+        <MirostatTau>5</MirostatTau>
+        <MirostatEta>0.1</MirostatEta>
+        <PenaltyLastN>64</PenaltyLastN>
         <PenaltyRepeat>1</PenaltyRepeat>
         <PenaltyFreq>0</PenaltyFreq>
         <PenaltyPresent>0</PenaltyPresent>

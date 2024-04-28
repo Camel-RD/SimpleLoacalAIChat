@@ -22,18 +22,6 @@ namespace SimpleLoacalAIChat.Models
         public int? ResponseMaxTokenCount { get; set; } = default;
         [Category("1.General")]
         public float Temperature { get; set; } = 1f;
-        [Category("1.General")]
-        public string ExtraStopTokens { get; set; } = default;
-
-        public string[] GetExtraStopTokensArray()
-        {
-            if (ExtraStopTokens.IsNOE()) return new string[0];
-            var ret = ExtraStopTokens.Split(',', StringSplitOptions.RemoveEmptyEntries)
-                .Select(x => x.Trim())
-                .Where(x => !x.IsNOE())
-                .ToArray();
-            return ret;
-        }
 
         [Category("2.Extra")]
         public int TopK { get; set; } = 1;

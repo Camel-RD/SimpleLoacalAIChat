@@ -204,8 +204,6 @@ namespace SimpleLoacalAIChat
         {
             if (LlmEngine == null) return false;
 
-            if (ActiveConfigPreset != null && ActiveConfigPreset.Equals(preset))
-                return false;
             var rt = MyData.Config.ChatConfig.CheckConfigPreset(preset);
             if (rt != "Ok")
             {
@@ -217,6 +215,8 @@ namespace SimpleLoacalAIChat
             ActiveConfigPreset = preset with { };
             ActivePromptTemplate = ActiveConfigPreset.ChatConfig.GetPromptTemplateByName(ActiveConfigPreset.TemplateName);
             ActiveSamplingParams = ActiveConfigPreset.ChatConfig.GetSamplingParamsName(ActiveConfigPreset.SamplerName);
+            ActivePromptTemplate = ActivePromptTemplate with { };
+            ActiveSamplingParams = ActiveSamplingParams with { };
 
             PostTask(() => tslPreset.Text = ActiveConfigPreset.Name);
 
@@ -319,7 +319,7 @@ namespace SimpleLoacalAIChat
             if (ActiveSamplingParams == null) return new();
             var ret = new SamplingOptions()
             {
-                ExtraStopTokens = ActiveSamplingParams.GetExtraStopTokensArray(),
+                ExtraStopTokens = ActivePromptTemplate.GetExtraStopTokensArray(),
                 Mirostat = ActiveSamplingParams.Mirostat,
                 MirostatEta = ActiveSamplingParams.MirostatEta,
                 MirostatTau = ActiveSamplingParams.MirostatTau,
@@ -362,8 +362,8 @@ namespace SimpleLoacalAIChat
                 var llm_prompt = LlmEngine.Prompt(
                     real_prompt,
                     options,
-                    prependBosToken: true,
-                    processSpecialTokens: false
+                    prependBosToken: ActivePromptTemplate.PrependBosToken,
+                    processSpecialTokens: ActivePromptTemplate.ProcessSpecialTokens
                 );
 
                 CancellationTokenSource = new CancellationTokenSource();
@@ -433,10 +433,10 @@ namespace SimpleLoacalAIChat
 
         string FilterOutEosTokens(string text)
         {
-            var eos_tokens = ActiveSamplingParams.GetExtraStopTokensArray();
+            var eos_tokens = ActivePromptTemplate.GetExtraStopTokensArray();
             if (!(eos_tokens?.Length > 0)) return text;
             eos_tokens = eos_tokens.OrderByDescending(x => x.Length).ToArray();
-            foreach(var token in eos_tokens)
+            foreach (var token in eos_tokens)
                 text = text.Replace(token, "");
             return text;
         }
@@ -478,7 +478,7 @@ namespace SimpleLoacalAIChat
 
         void ShowStatus(string text) =>
             PostTask(() => ShowStatusA(text));
-        
+
         void ShowStatusA(string text)
         {
             lbStatus.Text = text;
@@ -611,7 +611,7 @@ namespace SimpleLoacalAIChat
         {
             prompt = prompt.Trim().Replace("\r", "");
             var system_prompt = ActivePromptTemplate.System;
-            system_prompt = system_prompt.Replace("\\n", "\n");
+            system_prompt = system_prompt?.Replace("\\n", "\n") ?? "";
             if (!ActiveConfigPreset.SystemPrompt.IsNOE())
                 system_prompt = string.Format(system_prompt, ActiveConfigPreset.SystemPrompt);
             var user_prompt = ActivePromptTemplate.Prompt;
@@ -624,7 +624,7 @@ namespace SimpleLoacalAIChat
         {
             var sb = new StringBuilder();
             var system_prompt = ActivePromptTemplate.System;
-            system_prompt = system_prompt.Replace("\\n", "\n");
+            system_prompt = system_prompt?.Replace("\\n", "\n") ?? "";
             if (!ActiveConfigPreset.SystemPrompt.IsNOE())
                 system_prompt = string.Format(system_prompt, ActiveConfigPreset.SystemPrompt);
             sb.Append(system_prompt);
@@ -744,5 +744,13 @@ namespace SimpleLoacalAIChat
             AddColoredTextA(add_atbegining + formatted_prompt + add_atend, DebugColor);
         }
 
+        private void miModelMetaData_Click(object sender, EventArgs e)
+        {
+            if (LlmEngine == null || !LlmEngine.Loaded) return;
+            var data = NativeExt.ReadMetadata(LlmEngine.ModelHandle);
+            var lines = data.Select(x => $"{x.Key}: {x.Value}");
+            var text = "\n" + string.Join("\n", lines) + "\n\n";
+            AddColoredTextA(text, DebugColor);
+        }
     }
 }

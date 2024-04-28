@@ -33,8 +33,6 @@ namespace LlamaCppLib
 
         ~LlmEngine() => Dispose(false);
 
-        public IntPtr ModelHandle => _model.Handle;
-
         protected virtual void Dispose(bool disposing)
         {
             if (!_disposed)
@@ -123,7 +121,7 @@ namespace LlamaCppLib
 
         public Span<int> Tokenize(string prompt, bool prependBosToken = false, bool processSpecialTokens = false) => llama_tokenize(_model.Handle, prompt, prependBosToken, processSpecialTokens);
 
-        public bool Loaded => _mainLoop?.Status == TaskStatus.Running || _model.Created;
+        public bool Loaded => _mainLoop?.Status == TaskStatus.Running;
 
         public LlmPrompt Prompt(
             string promptText,
@@ -390,7 +388,7 @@ namespace LlamaCppLib
 
                                 if (sequence.Prompt.Cancelled)
                                     sequence.Prompt.TokenChannel.Writer.Complete(new OperationCanceledException());
-                                else
+                                else if (stop)
                                     sequence.Prompt.TokenChannel.Writer.Complete();
 
                                 llama_kv_cache_seq_rm(_context.Handle, sequence.Id, -1, -1);
