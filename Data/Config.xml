@@ -11,10 +11,11 @@
         <GpuLayers>50</GpuLayers>
         <MainGpu>0</MainGpu>
         <Seed>-1</Seed>
-        <ContextLength>12000</ContextLength>
-        <BatchSize>1024</BatchSize>
+        <ContextLength>15360</ContextLength>
+        <BatchSize>2048</BatchSize>
         <ThreadCount>6</ThreadCount>
         <BatchThreadCount>1</BatchThreadCount>
+        <UseFlashAttention>false</UseFlashAttention>
       </ConfigPreset>
       <ConfigPreset>
         <Name>Dolphin mistral - grammar</Name>
@@ -29,6 +30,7 @@
         <BatchSize>1204</BatchSize>
         <ThreadCount>6</ThreadCount>
         <BatchThreadCount>1</BatchThreadCount>
+        <UseFlashAttention>false</UseFlashAttention>
       </ConfigPreset>
       <ConfigPreset>
         <Name>Dolphin Phi-2</Name>
@@ -43,6 +45,7 @@
         <BatchSize>512</BatchSize>
         <ThreadCount>4</ThreadCount>
         <BatchThreadCount>1</BatchThreadCount>
+        <UseFlashAttention>false</UseFlashAttention>
       </ConfigPreset>
       <ConfigPreset>
         <Name>DeepSeek 1.5</Name>
@@ -57,6 +60,7 @@
         <BatchSize>1024</BatchSize>
         <ThreadCount>1</ThreadCount>
         <BatchThreadCount>1</BatchThreadCount>
+        <UseFlashAttention>false</UseFlashAttention>
       </ConfigPreset>
       <ConfigPreset>
         <Name>Dolphin mistral</Name>
@@ -71,6 +75,7 @@
         <BatchSize>1024</BatchSize>
         <ThreadCount>6</ThreadCount>
         <BatchThreadCount>1</BatchThreadCount>
+        <UseFlashAttention>false</UseFlashAttention>
       </ConfigPreset>
       <ConfigPreset>
         <Name>WizardLM-2-7B</Name>
@@ -85,6 +90,7 @@
         <BatchSize>1024</BatchSize>
         <ThreadCount>6</ThreadCount>
         <BatchThreadCount>1</BatchThreadCount>
+        <UseFlashAttention>false</UseFlashAttention>
       </ConfigPreset>
       <ConfigPreset>
         <Name>Llama 3</Name>
@@ -99,9 +105,10 @@
         <BatchSize>1024</BatchSize>
         <ThreadCount>6</ThreadCount>
         <BatchThreadCount>1</BatchThreadCount>
+        <UseFlashAttention>false</UseFlashAttention>
       </ConfigPreset>
       <ConfigPreset>
-        <Name>MS Phi-3</Name>
+        <Name>MS Phi-3 mini</Name>
         <Model>Phi-3-mini-4k-instruct-Q4_K_M.gguf</Model>
         <TemplateName>Phi3</TemplateName>
         <SamplerName>simple-1</SamplerName>
@@ -113,6 +120,37 @@
         <BatchSize>512</BatchSize>
         <ThreadCount>4</ThreadCount>
         <BatchThreadCount>1</BatchThreadCount>
+        <UseFlashAttention>false</UseFlashAttention>
+      </ConfigPreset>
+      <ConfigPreset>
+        <Name>Llama 3 - SFR</Name>
+        <Model>SFR-Iterative-DPO-LLaMA-3-8B-R-Q4_K_M.gguf</Model>
+        <TemplateName>Llama 3</TemplateName>
+        <SamplerName>Mirostat</SamplerName>
+        <SystemPrompt>You are a helpful assistant.</SystemPrompt>
+        <GpuLayers>50</GpuLayers>
+        <MainGpu>0</MainGpu>
+        <Seed>-1</Seed>
+        <ContextLength>8192</ContextLength>
+        <BatchSize>1024</BatchSize>
+        <ThreadCount>6</ThreadCount>
+        <BatchThreadCount>1</BatchThreadCount>
+        <UseFlashAttention>true</UseFlashAttention>
+      </ConfigPreset>
+      <ConfigPreset>
+        <Name>MS Phi-3 mini 128k</Name>
+        <Model>Phi-3-mini-128k-instruct.Q4_K_M.gguf</Model>
+        <TemplateName>Phi3</TemplateName>
+        <SamplerName>simple-1</SamplerName>
+        <SystemPrompt>You are a helpful AI assistant.</SystemPrompt>
+        <GpuLayers>50</GpuLayers>
+        <MainGpu>0</MainGpu>
+        <Seed>-1</Seed>
+        <ContextLength>12000</ContextLength>
+        <BatchSize>512</BatchSize>
+        <ThreadCount>4</ThreadCount>
+        <BatchThreadCount>1</BatchThreadCount>
+        <UseFlashAttention>true</UseFlashAttention>
       </ConfigPreset>
     </ConfigPresets>
     <PromptTemplates>
@@ -130,13 +168,6 @@
         <Prompt>\n&lt;|im_start|&gt;Text:\n{0}&lt;|im_end|&gt;\n&lt;|im_start|&gt;Output:\n</Prompt>
         <Response>&lt;|im_end|&gt;</Response>
         <ExtraStopTokens>&lt;|im_end|&gt;</ExtraStopTokens>
-        <PrependBosToken xsi:nil="true" />
-      </PromptTemplate>
-      <PromptTemplate>
-        <Name>Phi2</Name>
-        <System>System: {0}\n</System>
-        <Prompt>User: {0}\n\nAssistant: </Prompt>
-        <Response>{0}\n</Response>
         <PrependBosToken xsi:nil="true" />
       </PromptTemplate>
       <PromptTemplate>
@@ -160,14 +191,20 @@
         <Response>{0}&lt;|eot_id|&gt;</Response>
         <ExtraStopTokens>&lt;|eot_id|&gt;</ExtraStopTokens>
         <PrependBosToken xsi:nil="true" />
-        <ProcessSpecialTokens>false</ProcessSpecialTokens>
       </PromptTemplate>
       <PromptTemplate>
         <Name>Phi3</Name>
-        <System>&lt;|system|&gt;\n{0}&lt;|end|&gt;\n</System>
+        <System />
         <Prompt>&lt;|user|&gt;\n{0}&lt;|end|&gt;\n&lt;|assistant|&gt;\n</Prompt>
         <Response>{0}&lt;|end|&gt;\n</Response>
         <ExtraStopTokens>&lt;|end|&gt;, &lt;|assistant|&gt;</ExtraStopTokens>
+        <PrependBosToken>true</PrependBosToken>
+      </PromptTemplate>
+      <PromptTemplate>
+        <Name>Phi2</Name>
+        <System>System: {0}\n</System>
+        <Prompt>User: {0}\n\nAssistant: </Prompt>
+        <Response>{0}\n</Response>
         <PrependBosToken>true</PrependBosToken>
       </PromptTemplate>
     </PromptTemplates>
@@ -378,7 +415,7 @@
       </SamplingParams>
       <SamplingParams>
         <Name>Mirostat</Name>
-        <ResponseMaxTokenCount>1024</ResponseMaxTokenCount>
+        <ResponseMaxTokenCount>2048</ResponseMaxTokenCount>
         <Temperature>0.8</Temperature>
         <TopK>40</TopK>
         <TopP>0.95</TopP>

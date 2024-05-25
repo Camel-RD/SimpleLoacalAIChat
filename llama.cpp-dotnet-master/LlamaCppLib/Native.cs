@@ -131,6 +131,8 @@ namespace LlamaCppLib
             public int main_gpu;
             public float* tensor_split;
 
+            public byte* rpc_servers;
+
             public llama_progress_callback progress_callback;
             public void* progress_callback_user_data;
 
@@ -174,6 +176,7 @@ namespace LlamaCppLib
             public sbyte logits_all;
             public sbyte embeddings;
             public sbyte offload_kqv;
+            public sbyte flash_attn;
 
             public ggml_abort_callback abort_callback;
             public void* abort_callback_data;
@@ -210,6 +213,13 @@ namespace LlamaCppLib
             public llama_token_data* data;
             public nuint size;
             public sbyte sorted;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct llama_chat_message
+        {
+            public byte* role;
+            public byte* content;
         }
 
         [LibraryImport(LibName)]
@@ -327,6 +337,16 @@ namespace LlamaCppLib
             [In, Out] byte[] buf,
             int length,
             [MarshalAs(UnmanagedType.I1)] bool special);
+
+        [LibraryImport(LibName)]
+        public static partial int llama_chat_apply_template(
+            nint model,
+            [In] byte[]? tmpl,
+            [In] llama_chat_message[] chat,
+            nuint n_msg,
+            [MarshalAs(UnmanagedType.I1)] bool add_ass,
+            [In, Out] byte[] buf,
+            int length);
 
         [LibraryImport(LibName)]
         [return: MarshalAs(UnmanagedType.I1)]

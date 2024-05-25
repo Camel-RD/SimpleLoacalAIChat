@@ -61,7 +61,7 @@ namespace LlamaCppLib
             GC.SuppressFinalize(this);
         }
 
-        public unsafe void LoadModel(string modelPath, LlmModelOptions? modelOptions = default, Action<float>? progressCallback = default)
+        public unsafe void LoadModel(string modelPath, LlmModelOptions? modelOptions = default, Action<float>? progressCallback = default, bool waitForMainLoop = true)
         {
             if (_model.Created)
                 throw new InvalidOperationException("Model already loaded.");
@@ -98,6 +98,7 @@ namespace LlamaCppLib
             cparams.n_batch = (uint)_modelOptions.BatchSize;
             cparams.n_threads = (uint)_modelOptions.ThreadCount;
             cparams.n_threads_batch = (uint)_modelOptions.BatchThreadCount;
+            cparams.flash_attn = (sbyte)(_modelOptions.UseFlashAttention ? 1 : 0);
             cparams.rope_freq_base = _modelOptions.RopeFrequeceBase;
             cparams.rope_freq_scale = _modelOptions.RopeFrequenceScale;
 
@@ -110,6 +111,14 @@ namespace LlamaCppLib
             _batch.Create(() => llama_batch_init((int)llama_n_ctx(_context.Handle), 0, 1), llama_batch_free);
 
             _StartAsync();
+
+            if (waitForMainLoop)
+            {
+                while (!Loaded)
+                {
+                    Task.Delay(TimeSpan.FromMilliseconds(100));
+                }
+            }
         }
 
         public void UnloadModel()

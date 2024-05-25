@@ -3,6 +3,12 @@ using System.Threading.Channels;
 
 namespace LlamaCppLib
 {
+    public class LlmMessage
+    {
+        public string? Role { get; set; }
+        public string? Content { get; set; }
+    }
+
     public class LlmPrompt
     {
         public LlmPrompt(string promptText, bool preprendBosToken = false, bool processSpecialTokens = false)

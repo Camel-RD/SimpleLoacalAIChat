@@ -249,6 +249,7 @@ namespace SimpleLoacalAIChat
             if (currentpreset.BatchSize != newpreset.BatchSize) return true;
             if (currentpreset.BatchThreadCount != newpreset.BatchThreadCount) return true;
             if (currentpreset.ThreadCount != newpreset.ThreadCount) return true;
+            if (currentpreset.UseFlashAttention != newpreset.UseFlashAttention) return true;
             return false;
         }
 
@@ -309,7 +310,8 @@ namespace SimpleLoacalAIChat
                 BatchSize = ActiveConfigPreset.BatchSize,
                 BatchThreadCount = ActiveConfigPreset.BatchThreadCount,
                 ThreadCount = ActiveConfigPreset.ThreadCount,
-                ContextLength = ActiveConfigPreset.ContextLength
+                ContextLength = ActiveConfigPreset.ContextLength,
+                UseFlashAttention = ActiveConfigPreset.UseFlashAttention,
             };
             return ret;
         }

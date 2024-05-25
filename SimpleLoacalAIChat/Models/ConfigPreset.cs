@@ -77,6 +77,8 @@ namespace SimpleLoacalAIChat.Models
         public int ThreadCount { get; set; } = 1;
         [Category("Model")]
         public int BatchThreadCount { get; set; } = 1;
+        [Category("Model")]
+        public bool UseFlashAttention { get; set; } = false;
 
 
         public event PropertyChangedEventHandler PropertyChanged;
