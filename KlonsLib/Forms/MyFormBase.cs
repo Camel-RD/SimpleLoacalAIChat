@@ -163,13 +163,9 @@ namespace KlonsLIB.Forms
 
         public virtual void CheckMenuColorTheme()
         {
+            ColorThemeHelper.MyToolStripRenderer.SetColorTheme(MyColorTheme);
             if (this.MainMenuStrip != null)
-            {
-                var rend = MainMenuStrip.Renderer as MyToolStripRenderer;
-                if (rend == null) return;
-                rend.SetColorTheme(MyColorTheme);
                 MainMenuStrip.Refresh();
-            }
         }
 
         public void SetControlsUpDownOrder(Control[][] cs)

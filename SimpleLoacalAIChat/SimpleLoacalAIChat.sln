@@ -7,9 +7,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LlamaCppLib", "..\llama.cpp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KlonsLib", "..\KlonsLib\KlonsLib.csproj", "{3FA1EAD8-79D0-4A8D-BFFD-202E2BCAE11D}"
 EndProject
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "llamacppdll", "..\llamacppdll\llamacppdll.shproj", "{FABF0C0B-0F56-444F-A9EC-8E1B9F286256}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleLoacalAIChat", "SimpleLoacalAIChat.csproj", "{B7ACBA59-9C0A-492F-938B-30BD52F7EB90}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "SharedItems", "..\SharedItems\SharedItems.shproj", "{EB561A41-4A88-4D83-9B05-E5D2618FCF67}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -37,7 +37,7 @@ Global
 		SolutionGuid = {EBC175D4-80A1-490D-AC98-96D133CD2FED}
 	EndGlobalSection
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		..\llamacppdll\llamacppdll.projitems*{b7acba59-9c0a-492f-938b-30bd52f7eb90}*SharedItemsImports = 5
-		..\llamacppdll\llamacppdll.projitems*{fabf0c0b-0f56-444f-a9ec-8e1b9f286256}*SharedItemsImports = 13
+		..\SharedItems\SharedItems.projitems*{b7acba59-9c0a-492f-938b-30bd52f7eb90}*SharedItemsImports = 5
+		..\SharedItems\SharedItems.projitems*{eb561a41-4a88-4d83-9b05-e5d2618fcf67}*SharedItemsImports = 13
 	EndGlobalSection
 EndGlobal

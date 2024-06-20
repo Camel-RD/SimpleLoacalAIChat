@@ -90,7 +90,7 @@
         <BatchSize>1024</BatchSize>
         <ThreadCount>6</ThreadCount>
         <BatchThreadCount>1</BatchThreadCount>
-        <UseFlashAttention>false</UseFlashAttention>
+        <UseFlashAttention>true</UseFlashAttention>
       </ConfigPreset>
       <ConfigPreset>
         <Name>Llama 3</Name>
@@ -135,7 +135,7 @@
         <BatchSize>1024</BatchSize>
         <ThreadCount>6</ThreadCount>
         <BatchThreadCount>1</BatchThreadCount>
-        <UseFlashAttention>true</UseFlashAttention>
+        <UseFlashAttention>false</UseFlashAttention>
       </ConfigPreset>
       <ConfigPreset>
         <Name>MS Phi-3 mini 128k</Name>
@@ -146,11 +146,26 @@
         <GpuLayers>50</GpuLayers>
         <MainGpu>0</MainGpu>
         <Seed>-1</Seed>
-        <ContextLength>12000</ContextLength>
+        <ContextLength>8192</ContextLength>
         <BatchSize>512</BatchSize>
         <ThreadCount>4</ThreadCount>
         <BatchThreadCount>1</BatchThreadCount>
         <UseFlashAttention>true</UseFlashAttention>
+      </ConfigPreset>
+      <ConfigPreset>
+        <Name>Karen</Name>
+        <Model>karen_theeditor_v2_creative_mistral_7b.Q4_K_M.gguf</Model>
+        <TemplateName>ChatML-Karen</TemplateName>
+        <SamplerName>LLaMA-Precise</SamplerName>
+        <SystemPrompt />
+        <GpuLayers>50</GpuLayers>
+        <MainGpu>0</MainGpu>
+        <Seed>-1</Seed>
+        <ContextLength>4096</ContextLength>
+        <BatchSize>1204</BatchSize>
+        <ThreadCount>6</ThreadCount>
+        <BatchThreadCount>1</BatchThreadCount>
+        <UseFlashAttention>false</UseFlashAttention>
       </ConfigPreset>
     </ConfigPresets>
     <PromptTemplates>
@@ -206,6 +221,14 @@
         <Prompt>User: {0}\n\nAssistant: </Prompt>
         <Response>{0}\n</Response>
         <PrependBosToken>true</PrependBosToken>
+      </PromptTemplate>
+      <PromptTemplate>
+        <Name>ChatML-Karen</Name>
+        <System>&lt;|im_start|&gt;system\n&lt;|im_end|&gt;</System>
+        <Prompt>\n&lt;|im_start|&gt;user\nEdit the following text for spelling and grammar mistakes: {0} &lt;|im_end|&gt;\n&lt;|im_start|&gt;assistant\n</Prompt>
+        <Response>{0}&lt;|im_end|&gt;</Response>
+        <ExtraStopTokens>&lt;|im_end|&gt;</ExtraStopTokens>
+        <PrependBosToken xsi:nil="true" />
       </PromptTemplate>
     </PromptTemplates>
     <SamplingParams>

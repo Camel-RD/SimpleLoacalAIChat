@@ -32,7 +32,7 @@ namespace SimpleLoacalAIChat
         {
             components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
-            tbPrompt = new TextBox();
+            tbPrompt = new FlatRichTextBox();
             tbOut = new FlatRichTextBox();
             statusStrip1 = new StatusStrip();
             tslPreset = new ToolStripStatusLabel();
@@ -80,11 +80,12 @@ namespace SimpleLoacalAIChat
             // 
             // tbPrompt
             // 
+            tbPrompt.BorderColor = SystemColors.ControlText;
+            tbPrompt.BorderStyle = BorderStyle.None;
             tbPrompt.Dock = DockStyle.Fill;
             tbPrompt.Location = new Point(0, 0);
             tbPrompt.Multiline = true;
             tbPrompt.Name = "tbPrompt";
-            tbPrompt.ScrollBars = ScrollBars.Both;
             tbPrompt.Size = new Size(1020, 180);
             tbPrompt.TabIndex = 2;
             // 
@@ -417,7 +418,7 @@ namespace SimpleLoacalAIChat
         }
 
         #endregion
-        private TextBox tbPrompt;
+        private KlonsLIB.Components.FlatRichTextBox tbPrompt;
         private KlonsLIB.Components.FlatRichTextBox tbOut;
         private StatusStrip statusStrip1;
         private ToolStripStatusLabel lbStatus;

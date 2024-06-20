@@ -8,6 +8,7 @@ using System.Windows.Forms.Design;
 using static System.Net.Mime.MediaTypeNames;
 using System.Text;
 using SimpleLoacalAIChat.Classes;
+using System.Windows.Forms;
 
 namespace SimpleLoacalAIChat
 {
@@ -54,6 +55,8 @@ namespace SimpleLoacalAIChat
 
         LlmEngine LlmEngine = null;
 
+        RTBSpellChecker RTBSpellChecker = null;
+
         private async void Form1_Shown(object sender, EventArgs e)
         {
             sync_ctx = SynchronizationContext.Current;
@@ -61,8 +64,9 @@ namespace SimpleLoacalAIChat
             CheckMyFontAndColors();
             tabPage2.Scale(ScaleFactor);
             CheckMenuColorTheme();
-
             ApplySetting();
+
+            RTBSpellChecker = new RTBSpellChecker(tbPrompt);
 
             var ret = MyData.Config.ChatConfig.CheckLinks();
             if (ret != "Ok")
@@ -84,6 +88,7 @@ namespace SimpleLoacalAIChat
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
+            RTBSpellChecker?.Dispose();
             if (LoadingModel || PromptGeneratorIsRunning)
             {
                 e.Cancel = true;
@@ -643,6 +648,7 @@ namespace SimpleLoacalAIChat
                 else
                 {
                     var response = ActivePromptTemplate.Response;
+                    response = response.Replace("\\n", "\n");
                     response = string.Format(response, item.Text);
                     sb.Append(response);
                 }
