@@ -3,6 +3,7 @@ using System.Runtime.InteropServices;
 
 using static LlamaCppLib.Native;
 using static LlamaCppLib.Interop;
+using System.Text;
 
 namespace LlamaCppLib
 {
@@ -130,9 +131,16 @@ namespace LlamaCppLib
             _model.Dispose();
         }
 
-        public Span<int> Tokenize(string prompt, bool prependBosToken = false, bool processSpecialTokens = false) => llama_tokenize(_model.Handle, prompt, prependBosToken, processSpecialTokens);
-
         public bool Loaded => _mainLoop?.Status == TaskStatus.Running || _model.Created;
+
+        public Span<int> Tokenize(string prompt, bool prependBosToken = false, bool processSpecialTokens = false) => llama_tokenize(_model.Handle, Encoding.UTF8.GetBytes(prompt), prependBosToken, processSpecialTokens);
+
+        public nint ModelNativeHandle { get => _model.Handle; }
+        public nint ContextNativeHandle { get => _context.Handle; }
+
+        public int ContextLength => Loaded ? (int)llama_n_ctx(_context.Handle) : 0;
+        public int TrainingContextLength => Loaded ? llama_n_ctx_train(_model.Handle) : 0;
+        public int LayerCount => Loaded ? llama_n_layer(_model.Handle) : 0;
 
         public LlmPrompt Prompt(
             string promptText,
@@ -213,14 +221,10 @@ namespace LlamaCppLib
                         .Select(tokens => tokens.Single())
                         .ToArray();
 
-                    var sequence = new LlmSequence(
-                        prompt,
-                        (int)llama_n_ctx(_context.Handle),
-                        Tokenize(prompt.PromptText, prompt.PrependBosToken, prompt.ProcessSpecialTokens),
-                        extraStopTokens
-                    )
-                    { T1 = DateTime.Now };
+                    var ctxLength = (int)llama_n_ctx(_context.Handle);
+                    var tokens = Tokenize(prompt.PromptText, prompt.PrependBosToken, prompt.ProcessSpecialTokens);
 
+                    var sequence = new LlmSequence(prompt, ctxLength, tokens, extraStopTokens) { T1 = DateTime.Now };
                     var id = sequences.Add(sequence);
                     sequence.Id = id;
                 }
@@ -389,6 +393,7 @@ namespace LlamaCppLib
                             if (!stop)
                             {
                                 sequence.Prompt.TokenChannel.Writer.TryWrite(llama_token_to_piece(_model.Handle, token).ToArray());
+                                //sequence.Prompt.TokenChannel.Writer.TryWrite(llama_detokenize(_model.Handle, [token]));
                                 sequence.Tokens[sequence.PosTokens++] = token;
                             }
 

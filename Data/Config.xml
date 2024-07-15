@@ -146,7 +146,7 @@
         <GpuLayers>50</GpuLayers>
         <MainGpu>0</MainGpu>
         <Seed>-1</Seed>
-        <ContextLength>8192</ContextLength>
+        <ContextLength>8196</ContextLength>
         <BatchSize>512</BatchSize>
         <ThreadCount>4</ThreadCount>
         <BatchThreadCount>1</BatchThreadCount>
@@ -164,6 +164,21 @@
         <ContextLength>4096</ContextLength>
         <BatchSize>1204</BatchSize>
         <ThreadCount>6</ThreadCount>
+        <BatchThreadCount>1</BatchThreadCount>
+        <UseFlashAttention>false</UseFlashAttention>
+      </ConfigPreset>
+      <ConfigPreset>
+        <Name>Gemma 2</Name>
+        <Model>gemma-2-27b-it-Q4_K_M.gguf</Model>
+        <TemplateName>Gemma 2</TemplateName>
+        <SamplerName>simple-1</SamplerName>
+        <SystemPrompt>You are a helpful AI assistant.</SystemPrompt>
+        <GpuLayers>12</GpuLayers>
+        <MainGpu>0</MainGpu>
+        <Seed>-1</Seed>
+        <ContextLength>4096</ContextLength>
+        <BatchSize>512</BatchSize>
+        <ThreadCount>4</ThreadCount>
         <BatchThreadCount>1</BatchThreadCount>
         <UseFlashAttention>false</UseFlashAttention>
       </ConfigPreset>
@@ -229,6 +244,12 @@
         <Response>{0}&lt;|im_end|&gt;</Response>
         <ExtraStopTokens>&lt;|im_end|&gt;</ExtraStopTokens>
         <PrependBosToken xsi:nil="true" />
+      </PromptTemplate>
+      <PromptTemplate>
+        <Name>Gemma 2</Name>
+        <Prompt>&lt;start_of_turn&gt;user\n{0}&lt;end_of_turn&gt;\n&lt;start_of_turn&gt;model\n</Prompt>
+        <Response>{0}&lt;end_of_turn&gt;\n</Response>
+        <PrependBosToken>true</PrependBosToken>
       </PromptTemplate>
     </PromptTemplates>
     <SamplingParams>

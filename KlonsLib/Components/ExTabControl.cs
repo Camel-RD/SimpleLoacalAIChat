@@ -529,7 +529,14 @@ namespace KlonsLIB.Components
 
         /// <summary>Raises the <see cref="IExControl.DefaultStyleChanged" /> event.</summary>
         protected virtual void OnDefaultStyleChanged() => DefaultStyleChanged?.Invoke(this, EventArgs.Empty);
-       
+
+        protected override void ScaleControl(SizeF factor, BoundsSpecified specified)
+        {
+            base.ScaleControl(factor, specified);
+            foreach (var tab in TabPages)
+                ((TabPage)tab).Scale(factor);
+        }
+
     }
 
     /// <summary>

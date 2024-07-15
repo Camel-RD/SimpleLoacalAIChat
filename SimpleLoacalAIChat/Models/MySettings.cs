@@ -9,6 +9,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
+using System.Drawing.Design;
+using System.Windows.Forms.Design;
 
 namespace SimpleLoacalAIChat.Models
 {
@@ -195,6 +197,10 @@ namespace SimpleLoacalAIChat.Models
         [Category("AutoLoad")]
         [Editor(typeof(KlonsLIB.Components.MyDropDownPropertyEditor), typeof(System.Drawing.Design.UITypeEditor))]
         public string AutoLoadPresetName { get; set; }
+
+        [Category("Behaviour")]
+        [Editor(typeof(FolderNameEditor), typeof(UITypeEditor))]
+        public string ExtraModelsPath { get; set; } = null;
 
         [Category("Behaviour")]
         public bool WarnAboutMissingModels { get; set; } = false;

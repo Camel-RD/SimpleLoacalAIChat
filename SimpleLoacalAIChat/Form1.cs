@@ -62,7 +62,6 @@ namespace SimpleLoacalAIChat
             sync_ctx = SynchronizationContext.Current;
 
             CheckMyFontAndColors();
-            tabPage2.Scale(ScaleFactor);
             CheckMenuColorTheme();
             ApplySetting();
 

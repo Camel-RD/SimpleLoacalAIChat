@@ -10,6 +10,8 @@
 *.zip
 *.gguf
 *.dll
+*.aff
+*.dic
 Misc/
 libs/
 Output/

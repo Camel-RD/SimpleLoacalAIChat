@@ -16,19 +16,43 @@ namespace SimpleLoacalAIChat.Models
 
         public string[] GetModelList()
         {
-            if (!Directory.Exists(MyData.MyModelsFolder)) return new string[0];
-            var di = new DirectoryInfo(MyData.MyModelsFolder);
-            var ret = di.GetFiles("*.gguf").Select(x => x.Name).ToArray();
-            return ret;
+            var ret = new List<string>();
+            if (Directory.Exists(MyData.MyModelsFolder))
+            {
+                var di = new DirectoryInfo(MyData.MyModelsFolder);
+                var names = di.GetFiles("*.gguf").Select(x => x.Name).ToArray();
+                ret.AddRange(names);
+            }
+            if (!MyData.Settings.ExtraModelsPath.IsNOE() && 
+                Directory.Exists(MyData.Settings.ExtraModelsPath))
+            {
+                var di = new DirectoryInfo(MyData.Settings.ExtraModelsPath);
+                var names = di.GetFiles("*.gguf").Select(x => x.Name).ToArray();
+                ret.AddRange(names);
+            }
+            if (ret.Count == 0) return [];
+            return ret.Distinct().Order().ToArray();
         }
 
         public string GetModelFullFileNmae(string model)
         {
-            if (!Directory.Exists(MyData.MyModelsFolder)) return null;
-            var di = new DirectoryInfo(MyData.MyModelsFolder);
-            var fnms = di.GetFiles("*.gguf");
-            var ret = fnms.FirstOrDefault(x => string.Equals(x.Name, model, StringComparison.InvariantCultureIgnoreCase));
-            return ret?.FullName;
+            if (Directory.Exists(MyData.MyModelsFolder))
+            {
+                var di = new DirectoryInfo(MyData.MyModelsFolder);
+                var fnms = di.GetFiles("*.gguf");
+                var ret = fnms.FirstOrDefault(x => string.Equals(x.Name, model, StringComparison.InvariantCultureIgnoreCase));
+                if(ret != null)
+                    return ret.FullName;
+            }
+            if (!MyData.Settings.ExtraModelsPath.IsNOE() &&
+                Directory.Exists(MyData.Settings.ExtraModelsPath))
+            {
+                var di = new DirectoryInfo(MyData.Settings.ExtraModelsPath);
+                var fnms = di.GetFiles("*.gguf");
+                var ret = fnms.FirstOrDefault(x => string.Equals(x.Name, model, StringComparison.InvariantCultureIgnoreCase));
+                return ret?.FullName;
+            }
+            return null;
         }
 
         public ConfigPreset GetConfigPresetByName(string name) => 
@@ -49,7 +73,7 @@ namespace SimpleLoacalAIChat.Models
             {
                 sb.AppendLine($"Model name not set in {configPreset.Name}");
             }
-            var model_path = Path.Combine(MyData.MyModelsFolder, configPreset.Model);
+            var model_path = GetModelFullFileNmae(configPreset.Model);
             if (MyData.Settings.WarnAboutMissingModels && !File.Exists(model_path))
             {
                 sb.AppendLine($"Model file not found in {configPreset.Name}\n   File: {model_path}");

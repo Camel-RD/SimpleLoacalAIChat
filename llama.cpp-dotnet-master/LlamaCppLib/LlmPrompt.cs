@@ -11,7 +11,10 @@ namespace LlamaCppLib
 
     public class LlmPrompt
     {
-        public LlmPrompt(string promptText, bool preprendBosToken = false, bool processSpecialTokens = false)
+        public LlmPrompt(
+            string promptText, 
+            bool preprendBosToken = false, 
+            bool processSpecialTokens = false)
         {
             this.PromptText = promptText;
             this.PrependBosToken = preprendBosToken;
@@ -20,7 +23,11 @@ namespace LlamaCppLib
             this.TokenChannel = Channel.CreateUnbounded<byte[]>();
         }
 
-        public LlmPrompt(string prompt, SamplingOptions samplingOptions, bool preprendBosToken = false, bool processSpecialTokens = false) :
+        public LlmPrompt(
+            string prompt, 
+            SamplingOptions samplingOptions, 
+            bool preprendBosToken = false, 
+            bool processSpecialTokens = false) :
             this(prompt, preprendBosToken, processSpecialTokens)
         {
             this.SamplingOptions = samplingOptions;
