@@ -533,8 +533,13 @@ namespace KlonsLIB.Components
         protected override void ScaleControl(SizeF factor, BoundsSpecified specified)
         {
             base.ScaleControl(factor, specified);
-            foreach (var tab in TabPages)
-                ((TabPage)tab).Scale(factor);
+            //foreach (var tab in TabPages)
+            //    ((TabPage)tab).Scale(factor);
+        }
+
+        protected override void OnFontChanged(EventArgs e)
+        {
+            base.OnFontChanged(e);
         }
 
     }

@@ -8,9 +8,8 @@ using KlonsLIB.Misc;
 
 namespace KlonsLIB.Forms
 {
-    public class MyFormBase : Form
+    public partial class MyFormBase : Form
     {
-        private Control[][] controlsUpDownOrder = null;
         private ToolStrip myToolStrip = null;
 
         [Browsable(false)]
@@ -62,7 +61,6 @@ namespace KlonsLIB.Forms
 
         public MyFormBase()
         {
-            AutoScaleMode = AutoScaleMode.Font;
             IsFormClosing = false;
             CloseOnEscape = false;
         }
@@ -148,31 +146,6 @@ namespace KlonsLIB.Forms
             return this.ShowDialog(MyMainForm);
         }
 
-        protected virtual MyColorTheme MyColorTheme => MyData.Settings.ColorTheme;
-
-        public virtual void SetupMenuRenderer()
-        {
-            if (this.MainMenuStrip != null)
-            {
-                MainMenuStrip.ForeColor = Color.White;
-                MainMenuStrip.Renderer = new MyToolStripRenderer(MyColorTheme);
-                if (MyToolStrip != null)
-                    MyToolStrip.Renderer = MainMenuStrip.Renderer;
-            }
-        }
-
-        public virtual void CheckMenuColorTheme()
-        {
-            ColorThemeHelper.MyToolStripRenderer.SetColorTheme(MyColorTheme);
-            if (this.MainMenuStrip != null)
-                MainMenuStrip.Refresh();
-        }
-
-        public void SetControlsUpDownOrder(Control[][] cs)
-        {
-            controlsUpDownOrder = cs;
-        }
-
         [DefaultValue(null)]
         [TypeConverter(typeof(ReferenceConverter))]
         public virtual ToolStrip MyToolStrip
@@ -197,236 +170,6 @@ namespace KlonsLIB.Forms
         public virtual bool SaveData()
         {
             return true;
-        }
-
-        public void CheckMyFontAndColors()
-        {
-            this.Font = Settings.FormFont;
-            foreach (Control c in this.Controls)
-            {
-                if (c is ToolStrip || c is MenuStrip)
-                {
-                    c.Font = this.Font;
-                    foreach (var ti in (c as ToolStrip).Items)
-                    {
-                        if (ti is ToolStripComboBox)
-                            (ti as ToolStripComboBox).Font = this.Font;
-                    }
-                }
-                else
-                {
-                    if (!c.Font.Equals(this.Font))
-                    {
-                        c.Font = new Font(
-                            this.Font.FontFamily,
-                            this.Font.SizeInPoints,
-                            c.Font.Style);
-                    }
-                }
-            }
-            MyColorTheme cth = Settings.ColorTheme;
-            ColorThemeHelper.ApplyToForm(this, cth);
-        }
-
-        protected virtual void CheckMyFontSize()
-        {
-            if (this.Font.Size != Settings.FormFontSize)
-                this.Font = new Font(this.Font.Name, Settings.FormFontSize, this.Font.Style);
-        }
-        protected void SetFontSize(int sz)
-        {
-            if (this.Font.Size != sz)
-                this.Font = new Font(this.Font.Name, sz, this.Font.Style);
-        }
-
-        protected void SetColorTheme(MyColorTheme theme)
-        {
-            ColorThemeHelper.ApplyToForm(this, theme);
-        }
-
-        protected override void OnActivated(EventArgs e)
-        {
-            this.SetDGVShowCellToolTips(true);
-            if (this.IsMdiContainer && this.ActiveMdiChild != null)
-            {
-                this.ActiveMdiChild.SetDGVShowCellToolTips(true);
-                /*
-                foreach (var f in MdiChildren)
-                {
-                    f.SetDGVShowCellToolTips(true);
-                }*/
-            }
-            base.OnActivated(e);
-        }
-
-        protected override void OnDeactivate(EventArgs e)
-        {
-            this.SetDGVShowCellToolTips(false);
-            if (this.IsMdiContainer && this.ActiveMdiChild != null)
-            {
-                this.ActiveMdiChild.SetDGVShowCellToolTips(false);
-                /*
-                foreach (var f in MdiChildren)
-                {
-                    f.SetDGVShowCellToolTips(false);
-                }*/
-            }
-            base.OnDeactivate(e);
-        }
-
-        protected bool GetPosInMoveSeq(Control control, out int r, out int c)
-        {
-            r = -1;
-            c = -1;
-
-            if (controlsUpDownOrder == null) return false;
-
-            for (int i = 0; i < controlsUpDownOrder.Length; i++)
-            {
-                for (int j = 0; j < controlsUpDownOrder[i].Length; j++)
-                {
-                    if (controlsUpDownOrder[i][j] == control)
-                    {
-                        r = i;
-                        c = j;
-                        return true;
-                    }
-                }
-            }
-            return false;
-        }
-
-        protected Control GetControlInRow(int row, int col)
-        {
-            Control c = controlsUpDownOrder[row][col];
-            if (c != null) return c;
-            int c1 = col, c2 = col;
-            do
-            {
-                if (c1 < 0 && c2 >= controlsUpDownOrder[row].Length)
-                    return null;
-                if (c1 >= 0 && controlsUpDownOrder[row][c1] != null)
-                    return controlsUpDownOrder[row][c1];
-                if (c2 < controlsUpDownOrder[row].Length &&
-                    controlsUpDownOrder[row][c2] != null)
-                    return controlsUpDownOrder[row][c2];
-                c1--;
-                c2++;
-            } while (true);
-        }
-
-        protected Control GetUpControl(Control control)
-        {
-            int r, c;
-            if (!GetPosInMoveSeq(control, out r, out c)) return null;
-            if (r == 0) return GetNextControl(control, false);
-            return GetControlInRow(r - 1, c);
-        }
-
-        protected Control GetDownControl(Control control)
-        {
-            int r, c;
-            if (!GetPosInMoveSeq(control, out r, out c)) return null;
-            if (r == controlsUpDownOrder.Length - 1) return GetNextControl(control, true);
-            return GetControlInRow(r + 1, c);
-        }
-
-        protected bool CanGoRight(Control c)
-        {
-            if (c == null) return false;
-            TextBox tb = c as TextBox;
-            if (tb != null)
-            {
-                return tb.SelectionStart + tb.SelectionLength == tb.TextLength;
-            }
-            ComboBox cb = c as ComboBox;
-            if (cb != null)
-            {
-                return cb.SelectionStart + cb.SelectionLength == cb.Text.Length;
-            }
-            return true;
-        }
-        protected bool CanGoLeft(Control c)
-        {
-            if (c == null) return false;
-            TextBox tb = c as TextBox;
-            if (tb != null)
-            {
-                return tb.SelectionStart + tb.SelectionLength == 0;
-            }
-            ComboBox cb = c as ComboBox;
-            if (cb != null)
-            {
-                return cb.SelectionStart + cb.SelectionLength == 0;
-            }
-            return true;
-        }
-        protected bool CanGoUpOrDown(Control c)
-        {
-            if (c == null) return false;
-            TextBox tb = c as TextBox;
-            if (tb != null) return true;
-            ComboBox cb = c as ComboBox;
-            if (cb != null)
-            {
-                return !cb.DroppedDown;
-            }
-            return true;
-        }
-
-        protected bool GoLeft(Control control)
-        {
-            if (control == null) return false;
-            if (!CanGoLeft(control)) return false;
-            SelectNextControl(control, false, true, true, true);
-            return true;
-        }
-
-        protected bool GoRight(Control control)
-        {
-            if (control == null) return false;
-            if (!CanGoRight(control)) return false;
-            SelectNextControl(control, true, true, true, true);
-            return true;
-        }
-        protected bool GoUp(Control control)
-        {
-            if (control == null) return false;
-            if (!CanGoUpOrDown(control)) return false;
-            Control c = GetUpControl(control);
-            if (c == null) return false;
-            c.Select();
-            return true;
-        }
-        protected bool GoDown(Control control)
-        {
-            if (control == null) return false;
-            if (!CanGoUpOrDown(control)) return false;
-            Control c = GetDownControl(control);
-            if (c == null) return false;
-            c.Select();
-            return true;
-        }
-
-        protected bool OnNaviKey(object sender, KeyEventArgs e)
-        {
-            Control control = sender as Control;
-            switch (e.KeyCode)
-            {
-                case Keys.Left:
-                    e.Handled = GoLeft(control);
-                    break;
-                case Keys.Right:
-                    e.Handled = GoRight(control);
-                    break;
-                case Keys.Up:
-                    e.Handled = GoUp(control);
-                    break;
-                case Keys.Down:
-                    e.Handled = GoDown(control);
-                    break;
-            }
-            return e.Handled;
         }
 
         protected override void OnFormClosing(FormClosingEventArgs e)
@@ -496,7 +239,121 @@ namespace KlonsLIB.Forms
             return base.ProcessCmdKey(ref msg, keyData);
         }
 
-        public static float DPIFactor { private set; get; } = -1.0f;
+
+        #region +++++++++ Theming and Scaling +++++++++
+
+        protected virtual MyColorTheme MyColorTheme => MyData.Settings.ColorTheme;
+
+        protected void SetColorTheme(MyColorTheme theme)
+        {
+            ColorThemeHelper.ApplyToForm(this, theme);
+        }
+
+        public virtual void CheckMenuColorTheme()
+        {
+            ColorThemeHelper.MyToolStripRenderer.SetColorTheme(MyColorTheme);
+            if (this.MainMenuStrip != null)
+                MainMenuStrip.Refresh();
+        }
+        
+        public void CheckMyFontAndColors()
+        {
+            MyColorTheme cth = Settings.ColorTheme;
+            ColorThemeHelper.ApplyToForm(this, cth);
+        }
+
+        public void CheckMyFontAndColors2()
+        {
+            SuspendLayout();
+            this.Font = Settings.FormFont;
+            foreach (Control c in GetAllControls(this))
+            {
+                if (c is ToolStrip tsp)
+                {
+                    if (c.Font != this.Font)
+                        c.Font = this.Font;
+                    foreach (var ti in GetAllToolsStripItems(tsp))
+                    {
+                        if (ti is ToolStripComboBox tscb)
+                            tscb.Font = this.Font;
+                    }
+                }
+                else
+                {
+                    if (!c.Font.Equals(this.Font))
+                    {
+                        c.Font = new Font(Font.FontFamily, Font.SizeInPoints, c.Font.Style);
+                    }
+                }
+            }
+            ResumeLayout(true);
+        }
+
+        protected virtual void CheckMyFontSize()
+        {
+            if (this.Font.Size != Settings.FormFontSize)
+                this.Font = new Font(this.Font.Name, Settings.FormFontSize, this.Font.Style);
+        }
+
+        protected void SetFontSize(int sz)
+        {
+            if (this.Font.Size != sz)
+                this.Font = new Font(this.Font.Name, sz, this.Font.Style);
+        }
+
+        protected void CreateAllTabPages()
+        {
+            foreach (Control c in GetAllControls(this))
+            {
+                if (c is not TabControl tc) continue;
+                int k0 = tc.SelectedIndex;
+                for (int k1 = 0; k1 < tc.TabCount; k1++)
+                {
+                    if (k1 == k0) continue;
+                    tc.SelectedIndex = k1;
+                }
+                tc.SelectedIndex = k0;
+            }
+        }
+
+        public static IEnumerable<Control> GetAllControls(Control control)
+        {
+            foreach (Control c in control.Controls)
+            {
+                yield return c;
+                foreach (Control c1 in GetAllControls(c))
+                {
+                    yield return c1;
+                }
+            }
+        }
+
+        public static IEnumerable<ToolStripItem> GetAllToolsStripItems(ToolStrip tsp)
+        {
+            foreach (ToolStripItem tsi in tsp.Items)
+            {
+                foreach (ToolStripItem tsi2 in GetAllToolsStripItems(tsi))
+                {
+                    yield return tsi2;
+                }
+            }
+        }
+
+        public static IEnumerable<ToolStripItem> GetAllToolsStripItems(ToolStripItem tsi)
+        {
+            yield return tsi;
+            if (tsi is ToolStripDropDownItem tsdd)
+            {
+                foreach (ToolStripItem tsi2 in tsdd.DropDownItems)
+                {
+                    foreach (ToolStripItem tsi3 in GetAllToolsStripItems(tsi2))
+                    {
+                        yield return tsi3;
+                    }
+                }
+            }
+        }
+
         private SizeF scaleFactor = new SizeF(1.0f, 1.0f);
 
         [Browsable(false)]
@@ -504,56 +361,33 @@ namespace KlonsLIB.Forms
         public SizeF ScaleFactor => scaleFactor;
         protected override void ScaleControl(SizeF factor, BoundsSpecified specified)
         {
-            scaleFactor = factor;
-            if (DPIFactor == -1.0f)
-            {
-                using (Graphics g = CreateGraphics())
-                {
-                    DPIFactor = g.DpiX / 125f;
-                }
-            }
+            scaleFactor = new SizeF(scaleFactor.Width * factor.Width, scaleFactor.Height * factor.Height);
             base.ScaleControl(factor, specified);
-            ScaleControlA(this.Controls.Cast<Control>());
+            ScaleToolStrips(this, factor);
         }
-        
-        protected void ScaleControlA(IEnumerable<Control> cs)
+
+        protected void ScaleToolStrips(Form form, SizeF factor)
         {
-            foreach (Control c in cs)
+            foreach (var c in GetAllControls(form))
             {
-                if (c is ToolStrip && !(c is MenuStrip))
+                if (c is ToolStrip tsp && !(c is MenuStrip))
                 {
-                    ScaleToolStrip(c as ToolStrip);
-                }
-                else
-                {
-                    ScaleControlA(c.Controls.Cast<Control>());
+                    ScaleToolStrip(tsp, factor);
                 }
             }
         }
 
-        protected void ScaleToolStrip(ToolStrip tsp)
+        protected void ScaleToolStrip(ToolStrip tsp, SizeF factor)
         {
-            if (DPIFactor != -1.0f)
+            if (factor.Height != 1.0f)
             {
                 var imgsz = tsp.ImageScalingSize;
-                imgsz.Width = (int)((float)imgsz.Width * ScaleFactor.Width);
-                imgsz.Height = (int)((float)imgsz.Height * ScaleFactor.Height);
+                float f = Math.Max(factor.Width, factor.Height);
+                imgsz.Width = (int)((float)imgsz.Width * f);
+                imgsz.Height = (int)((float)imgsz.Height * f);
                 tsp.ImageScalingSize = imgsz;
             }
         }
-
-        private void InitializeComponent()
-        {
-            SuspendLayout();
-            // 
-            // MyFormBase
-            // 
-            AutoScaleDimensions = new SizeF(8F, 20F);
-            AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(292, 264);
-            Name = "MyFormBase";
-            ShowIcon = false;
-            ResumeLayout(false);
-        }
+        #endregion
     }
 }

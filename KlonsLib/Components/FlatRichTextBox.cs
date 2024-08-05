@@ -151,5 +151,17 @@ namespace KlonsLIB.Components
             format.dySpaceAfter = dySpaceAfter;
             SendMessageFmt(this.Handle, NM.EM_SETPARAFORMAT, NM.SCF_SELECTION, ref format);
         }
+
+        public void AddColoredText(string text, Color color)
+        {
+            SelectionLength = 0;
+            SelectionStart = TextLength;
+            SelectionColor = color;
+            AppendText(text);
+            SelectionLength = 0;
+            SelectionStart = TextLength;
+            SelectionColor = ForeColor;
+        }
+
     }
 }

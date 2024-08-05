@@ -16,7 +16,7 @@ namespace KlonsLIB.Forms
         public MyMessageBox()
         {
             InitializeComponent();
-            CheckMyFontAndColors();
+            CheckMyFontAndColors2();
             //Font = new Font(SystemFonts.MessageBoxFont.FontFamily, 12, SystemFonts.MessageBoxFont.Style);
             //BackColor = Color.DarkGray;
             //ForeColor = Color.White;

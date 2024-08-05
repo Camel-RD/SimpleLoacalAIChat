@@ -8,13 +8,13 @@ namespace KlonsLIB.Forms
         public Form_InputBox()
         {
             InitializeComponent();
-            CheckMyFontAndColors();
+            CheckMyFontAndColors2();
         }
 
         public Form_InputBox(string title, string text, string value)
         {
             InitializeComponent();
-            CheckMyFontAndColors();
+            CheckMyFontAndColors2();
             this.Text = title;
             label1.Text = text;
             tbInput.Text = value;

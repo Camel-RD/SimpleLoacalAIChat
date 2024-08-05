@@ -94,18 +94,18 @@
       </ConfigPreset>
       <ConfigPreset>
         <Name>Llama 3</Name>
-        <Model>Meta-Llama-3-8B-Instruct-Q4_K_M.gguf</Model>
+        <Model>Meta-Llama-3.1-8B-Instruct-abliterated-Q4_K_M.gguf</Model>
         <TemplateName>Llama 3</TemplateName>
         <SamplerName>Mirostat</SamplerName>
         <SystemPrompt>You are a helpful assistant.</SystemPrompt>
-        <GpuLayers>50</GpuLayers>
+        <GpuLayers>20</GpuLayers>
         <MainGpu>0</MainGpu>
         <Seed>-1</Seed>
-        <ContextLength>8192</ContextLength>
+        <ContextLength>20000</ContextLength>
         <BatchSize>1024</BatchSize>
         <ThreadCount>6</ThreadCount>
         <BatchThreadCount>1</BatchThreadCount>
-        <UseFlashAttention>false</UseFlashAttention>
+        <UseFlashAttention>true</UseFlashAttention>
       </ConfigPreset>
       <ConfigPreset>
         <Name>MS Phi-3 mini</Name>
@@ -146,7 +146,7 @@
         <GpuLayers>50</GpuLayers>
         <MainGpu>0</MainGpu>
         <Seed>-1</Seed>
-        <ContextLength>8196</ContextLength>
+        <ContextLength>12000</ContextLength>
         <BatchSize>512</BatchSize>
         <ThreadCount>4</ThreadCount>
         <BatchThreadCount>1</BatchThreadCount>
@@ -179,6 +179,21 @@
         <ContextLength>4096</ContextLength>
         <BatchSize>512</BatchSize>
         <ThreadCount>4</ThreadCount>
+        <BatchThreadCount>1</BatchThreadCount>
+        <UseFlashAttention>false</UseFlashAttention>
+      </ConfigPreset>
+      <ConfigPreset>
+        <Name>Lllama 3 - grammar</Name>
+        <Model>Meta-Llama-3-8B-Instruct-Q4_K_M.gguf</Model>
+        <TemplateName>Llama 3 - grammar</TemplateName>
+        <SamplerName>Mirostat</SamplerName>
+        <SystemPrompt />
+        <GpuLayers>50</GpuLayers>
+        <MainGpu>0</MainGpu>
+        <Seed>-1</Seed>
+        <ContextLength>8192</ContextLength>
+        <BatchSize>1024</BatchSize>
+        <ThreadCount>6</ThreadCount>
         <BatchThreadCount>1</BatchThreadCount>
         <UseFlashAttention>false</UseFlashAttention>
       </ConfigPreset>
@@ -250,6 +265,14 @@
         <Prompt>&lt;start_of_turn&gt;user\n{0}&lt;end_of_turn&gt;\n&lt;start_of_turn&gt;model\n</Prompt>
         <Response>{0}&lt;end_of_turn&gt;\n</Response>
         <PrependBosToken>true</PrependBosToken>
+      </PromptTemplate>
+      <PromptTemplate>
+        <Name>Llama 3 - grammar</Name>
+        <System>&lt;|begin_of_text|&gt;&lt;|start_header_id|&gt;system&lt;|end_header_id|&gt;\n\nCorrect and rephrase user text grammar errors in casual English.&lt;|eot_id|&gt;&lt;|start_header_id|&gt;user&lt;|end_header_id|&gt;\n\nshe no went to market&lt;|eot_id|&gt;&lt;|start_header_id|&gt;assistant&lt;|end_header_id|&gt;\n\nShe didn't go the the market.&lt;|eot_id|&gt;</System>
+        <Prompt>&lt;|start_header_id|&gt;user&lt;|end_header_id|&gt;\n\n{0}&lt;|eot_id|&gt;&lt;|start_header_id|&gt;assistant&lt;|end_header_id|&gt;\n\n</Prompt>
+        <Response>{0}&lt;|eot_id|&gt;</Response>
+        <ExtraStopTokens>&lt;|eot_id|&gt;</ExtraStopTokens>
+        <PrependBosToken xsi:nil="true" />
       </PromptTemplate>
     </PromptTemplates>
     <SamplingParams>

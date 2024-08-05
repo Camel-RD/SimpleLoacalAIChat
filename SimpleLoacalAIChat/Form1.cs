@@ -5,7 +5,6 @@ using SimpleLoacalAIChat.Models;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Windows.Forms.Design;
-using static System.Net.Mime.MediaTypeNames;
 using System.Text;
 using SimpleLoacalAIChat.Classes;
 using System.Windows.Forms;
@@ -20,8 +19,7 @@ namespace SimpleLoacalAIChat
             IsLoading = true;
             MyData.St.MainForm = this;
             InitializeComponent();
-            MyData.Settings.ColorThemeId = "dark1";
-            SetupMenuRenderer();
+            CheckMyFontAndColors();
 
             tsConfig.Renderer = MainMenuStrip.Renderer;
 
@@ -43,9 +41,9 @@ namespace SimpleLoacalAIChat
             if (e.PropertyName == nameof(MySettings.ColorThemeId) ||
                 e.PropertyName == nameof(MySettings.FormFont))
             {
-                SetupMenuRenderer();
-                CheckMyFontAndColors();
                 CheckMenuColorTheme();
+                CheckMyFontAndColors();
+                CheckMyFontAndColors2();
             }
         }
 
@@ -61,8 +59,9 @@ namespace SimpleLoacalAIChat
         {
             sync_ctx = SynchronizationContext.Current;
 
-            CheckMyFontAndColors();
+            CreateAllTabPages();
             CheckMenuColorTheme();
+            CheckMyFontAndColors2();
             ApplySetting();
 
             RTBSpellChecker = new RTBSpellChecker(tbPrompt);
@@ -80,7 +79,7 @@ namespace SimpleLoacalAIChat
                 return;
             }
 
-            var rt = await LoadDefaultPreset();
+            bool rt = await LoadDefaultPreset();
             IsLoading = false;
             tbPrompt.Focus();
         }
@@ -238,7 +237,9 @@ namespace SimpleLoacalAIChat
             {
                 LlmEngine.UnloadModel();
             }
+
             var rb = await LoadModel(fnm);
+
             return rb;
         }
 
@@ -266,23 +267,27 @@ namespace SimpleLoacalAIChat
             PostTask(() => SetViewState(EFormViewState.LoadingModel));
             try
             {
-                var rt = await Task.Run(() => LoadModelA(model_path));
+                var (rt, ret_exc) = await Task.Run(() => LoadModelA(model_path));
                 if (rt) PostTask(() => SetViewState(EFormViewState.LoadedModel));
                 else PostTask(() => SetViewState(EFormViewState.FailedToLoadModel));
+                if (ret_exc != null)
+                {
+                    ShowError(ret_exc.ToString());
+                }
                 return rt;
             }
             catch (Exception ex)
             {
                 PostTask(() => SetViewState(EFormViewState.FailedToLoadModel));
-                ShowError(ex.ToString());
+                PostTask(() => ShowError(ex.ToString()));
                 return false;
             }
         }
 
-        public bool LoadModelA(string model_path)
+        public (bool, Exception) LoadModelA(string model_path)
         {
-            if (LoadingModel) return false;
-            if (PromptGeneratorIsRunning) return false;
+            if (LoadingModel) return (false, null);
+            if (PromptGeneratorIsRunning) return (false, null);
             LoadingModel = true;
             try
             {
@@ -290,12 +295,11 @@ namespace SimpleLoacalAIChat
                     model_path,
                     GetActiveModelOptions(),
                     OnProgress);
-                return true;
+                return (true, null);
             }
             catch (Exception ex)
             {
-                PostTask(() => ShowError(ex.ToString()));
-                return false;
+                return (false, ex);
             }
             finally
             {
@@ -351,7 +355,7 @@ namespace SimpleLoacalAIChat
 
         public async Task<bool> RunPrompt(string prompt)
         {
-            if (LlmEngine == null || string.IsNullOrEmpty(tbPrompt.Text)) return false;
+            if (LlmEngine == null || string.IsNullOrEmpty(prompt)) return false;
             if (LoadingModel) return false;
             if (PromptGeneratorIsRunning) return false;
             PromptGeneratorIsRunning = true;
@@ -458,7 +462,7 @@ namespace SimpleLoacalAIChat
             bool b1 = state == EFormViewState.LoadedModel || state == EFormViewState.FinishedPrompt;
             tsbAsk.Visible = b1;
             tsbContinue.Visible = b1;
-            miDebugPrompt.Visible = b1;
+            tsbTools.Visible = b1;
             tsbCancel.Visible = state == EFormViewState.RunningPrompt;
             pbProggress.Visible = state == EFormViewState.LoadingModel;
             var status_text = state switch
@@ -471,6 +475,8 @@ namespace SimpleLoacalAIChat
                 _ => ""
             };
             ShowStatusA(status_text);
+            if (state == EFormViewState.LoadedModel)
+                exTabControl1.SelectedTab = tabChat;
         }
 
         #region ***********  TOOLING  ***********
@@ -501,38 +507,21 @@ namespace SimpleLoacalAIChat
         {
             sync_ctx.Post(_ =>
             {
-                AddColoredTextA(text, color);
+                tbOut.AddColoredText(text, color);
             }, null);
         }
 
-        public void AddColoredTextA(string text, Color color)
-        {
-            tbOut.SelectionLength = 0;
-            tbOut.SelectionStart = tbOut.TextLength;
-            tbOut.SelectionColor = color;
-            tbOut.AppendText(text);
-            tbOut.SelectionLength = 0;
-            tbOut.SelectionStart = tbOut.TextLength;
-            tbOut.SelectionColor = tbOut.ForeColor;
-        }
-        public void AddColoredTextLineA(string text, Color color) =>
-            AddColoredTextA(text + "\r\n", color);
-        public void AddTextLine(string text) =>
-            AddText(text + "\r\n");
-        public void AddColoredTextLine(string text, Color color) =>
-            AddColoredTextLineA(text, color);
-
         public void ShowInfo(string msg, string title = "Info", Form owner = null)
         {
-            MyMessageBox.Show(msg, title, MessageBoxButtons.OK, MessageBoxIcon.Information, null, owner);
+            MyMessageBox.Show(msg, title, MessageBoxButtons.OK, MessageBoxIcon.Information, null, this);
         }
         public void ShowWarning(string msg, string title = "Warning!", Form owner = null)
         {
-            MyMessageBox.Show(msg, title, MessageBoxButtons.OK, MessageBoxIcon.Warning, null, owner);
+            MyMessageBox.Show(msg, title, MessageBoxButtons.OK, MessageBoxIcon.Warning, null, this);
         }
         public void ShowError(string msg, string title = "Error!", Form owner = null)
         {
-            MyMessageBox.Show(msg, title, MessageBoxButtons.OK, MessageBoxIcon.Error, null, owner);
+            MyMessageBox.Show(msg, title, MessageBoxButtons.OK, MessageBoxIcon.Error, null, this);
         }
 
         #endregion
@@ -613,48 +602,6 @@ namespace SimpleLoacalAIChat
             SaveSettings();
         }
 
-        public string FormatPrompt(string prompt)
-        {
-            prompt = prompt.Trim().Replace("\r", "");
-            var system_prompt = ActivePromptTemplate.System;
-            system_prompt = system_prompt?.Replace("\\n", "\n") ?? "";
-            if (!ActiveConfigPreset.SystemPrompt.IsNOE())
-                system_prompt = string.Format(system_prompt, ActiveConfigPreset.SystemPrompt);
-            var user_prompt = ActivePromptTemplate.Prompt;
-            user_prompt = user_prompt.Replace("\\n", "\n");
-            user_prompt = string.Format(user_prompt, prompt);
-            return system_prompt + user_prompt;
-        }
-
-        public string FormatPromptList(List<ChatHistoryItem> list)
-        {
-            var sb = new StringBuilder();
-            var system_prompt = ActivePromptTemplate.System;
-            system_prompt = system_prompt?.Replace("\\n", "\n") ?? "";
-            if (!ActiveConfigPreset.SystemPrompt.IsNOE())
-                system_prompt = string.Format(system_prompt, ActiveConfigPreset.SystemPrompt);
-            sb.Append(system_prompt);
-            foreach (var item in list)
-            {
-                if (item.Type == EChatHistoryItemType.Request)
-                {
-                    var user_prompt = ActivePromptTemplate.Prompt;
-                    user_prompt = user_prompt.Replace("\\n", "\n");
-                    var prompt = item.Text.Replace("\r", "");
-                    user_prompt = string.Format(user_prompt, prompt);
-                    sb.Append(user_prompt);
-                }
-                else
-                {
-                    var response = ActivePromptTemplate.Response;
-                    response = response.Replace("\\n", "\n");
-                    response = string.Format(response, item.Text);
-                    sb.Append(response);
-                }
-            }
-            return sb.ToString();
-        }
-
         private void dgvConfig_CellBeginEdit(object sender, DataGridViewCellCancelEventArgs e)
         {
             if (e.RowIndex < 0 || e.RowIndex >= bsConfig.Count) return;
@@ -682,37 +629,154 @@ namespace SimpleLoacalAIChat
             }
         }
 
-        public enum EChatHistoryItemType { Request, Response }
+
+        public enum EChatHistoryItemType { Request, Response, PrefilledResponse }
         public record ChatHistoryItem(EChatHistoryItemType Type, string Text);
 
         List<ChatHistoryItem> ChatHistory = new();
 
-        void AddRequestToView(string text)
+        public string FormatPromptList(List<ChatHistoryItem> list)
         {
-            var add_atbegining = "";
-            if (!tbOut.Text.IsNOE())
+            var sb = new StringBuilder();
+            var system_prompt = "";
+            if (!ActivePromptTemplate.System.IsNOE())
             {
-                if (!tbOut.Text.EndsWith("\n\n"))
+                system_prompt = ActivePromptTemplate.System.Replace("\\n", "\n");
+            }
+            if (!ActiveConfigPreset.SystemPrompt.IsNOE())
+            {
+                system_prompt = string.Format(system_prompt, ActiveConfigPreset.SystemPrompt.Replace("\\n", "\n"));
+            }
+            sb.Append(system_prompt);
+            foreach (var item in list)
+            {
+                var item_text = item.Text.Replace("\r", "");
+                if (item.Type == EChatHistoryItemType.Request)
                 {
-                    if (tbOut.Text.EndsWith("\n")) add_atbegining = "\n";
-                    else add_atbegining = "\n\n";
+                    var user_prompt = ActivePromptTemplate.Prompt;
+                    user_prompt = user_prompt.Replace("\\n", "\n");
+                    var msg = TrimEx(item_text);
+                    user_prompt = string.Format(user_prompt, msg);
+                    sb.Append(user_prompt);
+                }
+                else if (item.Type == EChatHistoryItemType.Response)
+                {
+                    var response = ActivePromptTemplate.Response;
+                    response = response.Replace("\\n", "\n");
+                    var msg = TrimEx(item_text);
+                    response = string.Format(response, msg);
+                    sb.Append(response);
+                }
+                else
+                {
+                    var msg = TrimEx(item_text, true, false);
+                    sb.Append(msg);
                 }
             }
-            var add_atend = text.EndsWith("\n") ? "" : "\n";
-            AddColoredTextA(add_atbegining + text + add_atend, RequestColor);
+            return sb.ToString();
+        }
 
+        void AddRequestToView(string text, string prefilled_response)
+        {
+            var add_atbegining = "";
+            if (!text.IsNOE())
+            {
+                if (!tbOut.Text.IsNOE())
+                {
+                    if (!tbOut.Text.EndsWith("\n\n"))
+                    {
+                        if (tbOut.Text.EndsWith("\n")) add_atbegining = "\n";
+                        else add_atbegining = "\n\n";
+                    }
+                }
+                var add_atend = text.EndsWith("\n") ? "" : "\n";
+                text = text.Replace("\r", "").Replace("\n", "\r\n");
+                tbOut.AddColoredText(add_atbegining + text + add_atend, RequestColor);
+            }
+            if (!prefilled_response.IsNOE())
+            {
+                prefilled_response = prefilled_response.Replace("\r", "").Replace("\n", "\r\n");
+                tbOut.AddColoredText(prefilled_response, tbOut.ForeColor);
+            }
+        }
+
+        string TrimEx(string text, bool trimstart = true, bool trimend = true)
+        {
+            bool IsEmptyChar(char ch) => ch == ' ' || ch == '\n' || ch == '\r';
+
+            if (text.IsNOE()) return "";
+            int k1 = 0, k2 = text.Length - 1;
+            bool empty_text = true;
+            if (trimstart)
+            {
+                for (; k1 <= k2; k1++)
+                {
+                    char c = text[k1];
+                    if (IsEmptyChar(c)) continue;
+                    empty_text = false;
+                    break;
+                }
+                if (empty_text) return "";
+            }
+            if (trimend)
+            {
+                for (; k2 >= k1; k2--)
+                {
+                    char c = text[k2];
+                    if (IsEmptyChar(c)) continue;
+                    empty_text = false;
+                    break;
+                }
+                if (!trimstart && empty_text) return "";
+            }
+            var ret = text.Substring(k1, k2 - k1 + 1);
+            return ret;
+        }
+
+        (string prompt, string prefilled_response) GetPrompt()
+        {
+            var prompt = tbPrompt.Text;
+            if (prompt.IsNOE()) return ("", "");
+            var parts = prompt.Split("[PREFILL RESPONSE]");
+            prompt = parts[0];
+            prompt = TrimEx(prompt);
+            var prefilled_response = parts.Length > 1 ? parts[1] : "";
+            prefilled_response = TrimEx(prefilled_response, true, false);
+            return (prompt, prefilled_response);
         }
 
         private async void tsbAsk_Click(object sender, EventArgs e)
         {
-            var prompt = tbPrompt.Text;
+            var (prompt, prefilled_response) = GetPrompt();
             if (prompt.IsNOE()) return;
-            prompt = prompt.Replace("\r", "");
-            var formatted_prompt = FormatPrompt(prompt);
-            if (formatted_prompt.IsNOE()) return;
-            AddRequestToView(prompt);
+            AddRequestToView(prompt, prefilled_response);
             ChatHistory.Clear();
             ChatHistory.Add(new ChatHistoryItem(EChatHistoryItemType.Request, prompt));
+            if (!prefilled_response.IsNOE())
+                ChatHistory.Add(new ChatHistoryItem(EChatHistoryItemType.PrefilledResponse, prefilled_response));
+            var formatted_prompt = FormatPromptList(ChatHistory);
+            await RunPrompt(formatted_prompt);
+        }
+
+        private async void tsbContinue_Click(object sender, EventArgs e)
+        {
+            var (prompt, prefilled_response) = GetPrompt();
+            if (prompt.IsNOE())
+            {
+                var last_chat_item = ChatHistory.LastOrDefault();
+                if (last_chat_item == null || last_chat_item.Type == EChatHistoryItemType.Request) return;
+                if (last_chat_item.Type == EChatHistoryItemType.Response)
+                    ChatHistory[ChatHistory.Count - 1] = last_chat_item with { Type = EChatHistoryItemType.PrefilledResponse };
+            }
+            else
+            {
+                AddRequestToView(prompt, prefilled_response);
+                ChatHistory.Add(new ChatHistoryItem(EChatHistoryItemType.Request, prompt));
+                if (!prefilled_response.IsNOE())
+                    ChatHistory.Add(new ChatHistoryItem(EChatHistoryItemType.PrefilledResponse, prefilled_response));
+            }
+            var formatted_prompt = FormatPromptList(ChatHistory);
+            if (formatted_prompt.IsNOE()) return;
             await RunPrompt(formatted_prompt);
         }
 
@@ -722,33 +786,23 @@ namespace SimpleLoacalAIChat
             CancellationTokenSource.Cancel();
         }
 
-        private async void tsbContinue_Click(object sender, EventArgs e)
-        {
-            var prompt = tbPrompt.Text;
-            if (prompt.IsNOE()) return;
-            prompt = prompt.Replace("\r", "");
-            ChatHistory.Add(new ChatHistoryItem(EChatHistoryItemType.Request, prompt));
-            var formatted_prompt = FormatPromptList(ChatHistory);
-            if (formatted_prompt.IsNOE()) return;
-            AddRequestToView(prompt);
-            await RunPrompt(formatted_prompt);
-        }
-
         private void miDebugPrompt_Click(object sender, EventArgs e)
         {
             var list = new List<ChatHistoryItem>(ChatHistory);
-            var prompt = tbPrompt.Text;
+            var (prompt, prefilled_response) = GetPrompt();
             if (!prompt.IsNOE())
             {
-                prompt = prompt.Replace("\r", "");
                 list.Add(new ChatHistoryItem(EChatHistoryItemType.Request, prompt));
+                if (!prefilled_response.IsNOE())
+                    list.Add(new ChatHistoryItem(EChatHistoryItemType.PrefilledResponse, prefilled_response));
             }
             var formatted_prompt = FormatPromptList(list);
             if (formatted_prompt.IsNOE()) return;
 
             var add_atbegining = !tbOut.Text.IsNOE() && !tbOut.Text.EndsWith("\n") ? "\n" : "";
             var add_atend = prompt.EndsWith("\n") ? "" : "\n";
-            AddColoredTextA(add_atbegining + formatted_prompt + add_atend, DebugColor);
+
+            tbOut.AddColoredText(add_atbegining + formatted_prompt + add_atend, DebugColor);
         }
 
         private void miModelMetaData_Click(object sender, EventArgs e)
@@ -757,7 +811,161 @@ namespace SimpleLoacalAIChat
             var data = NativeExt.ReadMetadata(LlmEngine.ModelHandle);
             var lines = data.Select(x => $"{x.Key}: {x.Value}");
             var text = "\n" + string.Join("\n", lines) + "\n\n";
-            AddColoredTextA(text, DebugColor);
+            tbOut.AddColoredText(text, DebugColor);
+        }
+
+        private void miIncludePrefilledResponse_Click(object sender, EventArgs e)
+        {
+            var prompt = tbPrompt.Text ?? "";
+            if (prompt.Contains("[PREFILLED RESPONSE]"))
+            {
+                ShowInfo("Prompt already contains prefilled response tag");
+                return;
+            }
+            prompt += "\r\n\r\n[PREFILLED RESPONSE]\r\nprovide prefilled response here";
+            tbPrompt.Text = prompt;
+        }
+
+        public void FormatPromptListForEditing(List<ChatHistoryItem> list)
+        {
+            foreach (var item in list)
+            {
+                var msg = item.Text.Replace("\r", "").Replace("\\n", "\n").Replace("\n", "\r\n");
+                if (!msg.EndsWith("\r\n")) msg += "\r\n";
+                if (!msg.EndsWith("\r\n\r\n")) msg += "\r\n";
+                if (item.Type == EChatHistoryItemType.Request)
+                {
+                    tbEditChat.AddColoredText("[REQUEST]\r\n", DebugColor);
+                    tbEditChat.AddColoredText(msg, RequestColor);
+                }
+                else if (item.Type == EChatHistoryItemType.Response)
+                {
+                    tbEditChat.AddColoredText("[RESPONSE]\r\n", DebugColor);
+                    tbEditChat.AppendText(msg);
+                }
+            }
+        }
+
+        List<int> FindAllTags(string text, string tag)
+        {
+            var ret = new List<int>();
+            int k = 0;
+            while (k < text.Length)
+            {
+                k = text.IndexOf(tag, k);
+                if (k == -1) break;
+                ret.Add(k);
+                k += tag.Length;
+            }
+            return ret;
+        }
+
+        class TagedTextPart
+        {
+            public int Pos1, Pos2, Pos3;
+            public string Tag, Text = "";
+        }
+
+        List<TagedTextPart> FindAllTags2(string text, string tag)
+        {
+            var ret = FindAllTags(text, tag)
+                .Select(x => new TagedTextPart() { Pos1 = x - 1, Pos2 = x + tag.Length, Tag = tag })
+                .ToList();
+            return ret;
+        }
+
+        const string EditorTagSystem = "[SYSTEM]";
+        const string EditorTagRequest = "[REQUEST]";
+        const string EditorTagResponse = "[RESPONSE]";
+
+        List<ChatHistoryItem> ParseEditedChatText(string text)
+        {
+            if (text.IsNOE()) return null;
+            var ret = new List<ChatHistoryItem>();
+            var ksys = FindAllTags2(text, EditorTagSystem);
+            var kreq = FindAllTags2(text, EditorTagRequest);
+            var kres = FindAllTags2(text, EditorTagResponse);
+            var kall = ksys
+                .Concat(kreq)
+                .Concat(kres)
+                .OrderBy(x => x.Pos1)
+                .ToList();
+            for (int i = 0; i < kall.Count - 1; i++)
+                kall[i].Pos3 = kall[i + 1].Pos1;
+            kall[kall.Count - 1].Pos3 = text.Length - 1;
+            for (int i = 0; i < kall.Count; i++)
+            {
+                var ki = kall[i];
+                int k1 = Math.Min(Math.Max(ki.Pos2, 0), text.Length - 1);
+                int k2 = Math.Min(Math.Max(ki.Pos3, 0), text.Length - 1);
+                int ct = k2 - k1 + 1;
+                if (ct < 1) continue;
+                ki.Text = TrimEx(text.Substring(k1, ct));
+            }
+            for (int i = 0; i < kall.Count; i++)
+            {
+                var ki = kall[i];
+                if (ki.Tag == EditorTagRequest)
+                {
+                    ret.Add(new ChatHistoryItem(EChatHistoryItemType.Request, ki.Text));
+                }
+                else if (ki.Tag == EditorTagResponse)
+                {
+                    ret.Add(new ChatHistoryItem(EChatHistoryItemType.Response, ki.Text));
+                }
+            }
+            return ret;
+        }
+
+        string TestChat(List<ChatHistoryItem> chat)
+        {
+            if (chat == null || chat.Count == 0) 
+                return "Chat is empty";
+            if (chat[0].Type != EChatHistoryItemType.Request)
+                return "First messaga should be request";
+            if (chat.Last().Type == EChatHistoryItemType.Request)
+                return "Last messaga should be response";
+            var test_seq = chat.Select((x, k) => (x, k)).Where(x => x.k % 2 == 0).Where(x => x.x.Type == chat[x.k + 1].Type); ;
+            if (chat.Count % 2 == 1 || test_seq.Any())
+                return "Chat format is - request, response, request, response, request, response ...";
+            return "Ok";
+        }
+
+        private void tsbAddRequest_Click(object sender, EventArgs e)
+        {
+            tbEditChat.AddColoredText($"[{EditorTagRequest}]\r\n", DebugColor);
+            tbEditChat.AppendText("   ");
+        }
+
+        private void tsbAddResponse_Click(object sender, EventArgs e)
+        {
+            tbEditChat.AddColoredText($"[{EditorTagResponse}]\r\n", DebugColor);
+            tbEditChat.AppendText("   ");
+        }
+
+        private void tsbEditorSave_Click(object sender, EventArgs e)
+        {
+            var text = tbEditChat.Text;
+            if (text.IsNOE()) return;
+            var chat = ParseEditedChatText(text);
+            if (chat == null || chat.Count == 0) return;
+            var ret = TestChat(chat);
+            if (ret != "Ok")
+            {
+                ShowWarning(ret);
+                return;
+            }
+            ChatHistory = chat;
+            exTabControl1.SelectedTab = tabChat;
+        }
+
+        private void exTabControl1_SelectedIndexChanged_1(object sender, EventArgs e)
+        {
+            if (exTabControl1.SelectedTab == tabEditChat && ChatHistory != null && ChatHistory.Count > 0)
+            {
+                tbEditChat.Text = "";
+                FormatPromptListForEditing(ChatHistory);
+            }
         }
     }
 }

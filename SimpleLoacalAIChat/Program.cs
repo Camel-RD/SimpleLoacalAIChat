@@ -9,6 +9,10 @@ namespace SimpleLoacalAIChat
         [return: MarshalAs(UnmanagedType.Bool)]
         static extern bool SetForegroundWindow(IntPtr hWnd);
 
+        [DllImport("user32.dll")]
+        private static extern bool SetProcessDPIAware();
+
+
         public static string StartUpPresetName = null;
 
         /// <summary>
@@ -22,6 +26,8 @@ namespace SimpleLoacalAIChat
             {
                 if (createdNew)
                 {
+                    Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
+                    //SetProcessDPIAware();
                     var args = Environment.GetCommandLineArgs();
                     if (args != null && args.Length > 1)
                         StartUpPresetName = args[1];

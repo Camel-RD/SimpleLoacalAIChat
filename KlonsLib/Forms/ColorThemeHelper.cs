@@ -208,62 +208,31 @@ namespace KlonsLIB.Forms
         {
             ApplyToControl(c0, mycolortheme);
 
-            if (c0 is ToolStripMenuItem)
+            if (c0 is ToolStripDropDownItem tsddi)
             {
-                ToolStripMenuItem ti = c0 as ToolStripMenuItem;
-                foreach (var c1 in ti.DropDownItems)
-                {
-                    ApplyToControlA(c1, mycolortheme);
-                }
-                return;
-            }
-            if (c0 is ToolStripDropDownButton)
-            {
-                ToolStripDropDownButton tdb = c0 as ToolStripDropDownButton;
-                foreach (var c1 in tdb.DropDownItems)
+                foreach (var c1 in tsddi.DropDownItems)
                 {
                     ApplyToControlA(c1, mycolortheme);
                 }
                 return;
             }
 
-            Control c = null;
-            if (c0 is Control) c = c0 as Control;
-            if (c == null) return;
+            if (c0 is not Control c) return;
 
-            if (c is ContainerControl || c is Panel)
+            if (c is ToolStrip tsp)
             {
-                foreach (Control c1 in c.Controls)
+                foreach (var c1 in tsp.Items)
                 {
                     ApplyToControlA(c1, mycolortheme);
                 }
                 return;
             }
-            if (c is ToolStrip)
+
+            foreach (Control c1 in c.Controls)
             {
-                ToolStrip ts = c as ToolStrip;
-                foreach (var c1 in ts.Items)
-                {
-                    ApplyToControlA(c1, mycolortheme);
-                }
-                return;
+                ApplyToControlA(c1, mycolortheme);
             }
-            if (c is TabControl tabc)
-            {
-                foreach (var page in tabc.TabPages)
-                {
-                    ApplyToControlA(page, mycolortheme);
-                }
-                return;
-            }
-            if (c is TabPage)
-            {
-                foreach (var c1 in c.Controls)
-                {
-                    ApplyToControlA(c1, mycolortheme);
-                }
-                return;
-            }
+            return;
 
         }
 
@@ -271,30 +240,20 @@ namespace KlonsLIB.Forms
         {
             //if (c0 is ToolStripSeparator) return;
 
-            if (c0 is ToolStripMenuItem)
+            if (c0 is ToolStripItem tmi)
             {
-                ToolStripMenuItem tmi = c0 as ToolStripMenuItem;
                 tmi.ForeColor = mycolortheme.GetColor(tmi.ForeColor, mycolortheme.ControlTextColor);
                 tmi.BackColor = mycolortheme.GetColor(tmi.BackColor, mycolortheme.ControlColor);
-                ToolStripDropDownMenu tdd = tmi.DropDown as ToolStripDropDownMenu;
-                if (tdd != null)
+                if (tmi is ToolStripDropDownItem tdd)
                 {
                     tdd.ForeColor = mycolortheme.GetColor(tdd.ForeColor, mycolortheme.ControlTextColor);
                     //tdd.BackColor = mycolortheme.GetColor(tdd.BackColor, mycolortheme.ControlColorDark);
                 }
                 return;
             }
-            if (c0 is ToolStripItem)
-            {
-                ToolStripItem tsi = c0 as ToolStripItem;
-                tsi.ForeColor = mycolortheme.GetColor(tsi.ForeColor, mycolortheme.ControlTextColor);
-                tsi.BackColor = mycolortheme.GetColor(tsi.BackColor, mycolortheme.ControlColor);
-                return;
-            }
 
-            Control c = null;
-            if (c0 is Control) c = c0 as Control;
-            if (c == null) return;
+            if (c0 is not Control c) return;
+
 
             if (c is Form)
             {
@@ -305,14 +264,6 @@ namespace KlonsLIB.Forms
             {
                 c.BackColor = mycolortheme.GetColor(c.BackColor, mycolortheme.ControlColor);
             }
-            else if (c is MenuStrip)
-            {
-                MenuStrip ms = c as MenuStrip;
-                if (ms.Renderer != MyToolStripRenderer)
-                    ms.Renderer = MyToolStripRenderer;
-                c.ForeColor = mycolortheme.GetColor(c.ForeColor, mycolortheme.ControlTextColor);
-                c.BackColor = mycolortheme.GetColor(c.BackColor, mycolortheme.ControlColor);
-            }
             else if (c is ToolStrip)
             {
                 var tsp = c as ToolStrip;
@@ -320,26 +271,27 @@ namespace KlonsLIB.Forms
                     tsp.Renderer = MyToolStripRenderer;
                 c.ForeColor = mycolortheme.GetColor(c.ForeColor, mycolortheme.ControlTextColor);
                 c.BackColor = mycolortheme.GetColor(c.BackColor, mycolortheme.ControlColor);
+                tsp.Refresh();
             }
             else if (c is TabPage)
             {
                 c.ForeColor = mycolortheme.GetColor(c.ForeColor, mycolortheme.ControlTextColor);
                 c.BackColor = mycolortheme.GetColor(c.BackColor, mycolortheme.ControlColor);
             }
-            else if (c is MyLabel)
+            else if (c is MyLabel cmylabel)
             {
                 c.ForeColor = mycolortheme.GetColor(c.ForeColor, mycolortheme.ControlTextColor);
-                (c as MyLabel).BorderColor = mycolortheme.GetColor((c as MyLabel).BorderColor, mycolortheme.BorderColor);
+                cmylabel.BorderColor = mycolortheme.GetColor(cmylabel.BorderColor, mycolortheme.BorderColor);
             }
             else if (c is Label)
             {
                 c.ForeColor = mycolortheme.GetColor(c.ForeColor, mycolortheme.ControlTextColor);
             }
-            else if (c is MyTextBox)
+            else if (c is MyTextBox cmytextbox)
             {
                 c.ForeColor = mycolortheme.GetColor(c.ForeColor, mycolortheme.WindowTextColor);
                 c.BackColor = mycolortheme.GetColor(c.BackColor, mycolortheme.WindowColor);
-                (c as MyTextBox).BorderColor = mycolortheme.GetColor((c as MyTextBox).BorderColor, mycolortheme.BorderColor);
+                cmytextbox.BorderColor = mycolortheme.GetColor(cmytextbox.BorderColor, mycolortheme.BorderColor);
             }
             else if (c is FlatRichTextBox frb)
             {
@@ -352,24 +304,24 @@ namespace KlonsLIB.Forms
                 c.ForeColor = mycolortheme.GetColor(c.ForeColor, mycolortheme.WindowTextColor);
                 c.BackColor = mycolortheme.GetColor(c.BackColor, mycolortheme.WindowColor);
             }
-            else if (c is MyMcFlatComboBox)
+            else if (c is MyMcFlatComboBox cmyfcb)
             {
                 c.ForeColor = mycolortheme.GetColor(c.ForeColor, mycolortheme.WindowTextColor);
                 c.BackColor = mycolortheme.GetColor(c.BackColor, mycolortheme.WindowColor);
-                (c as MyMcFlatComboBox).BorderColor = mycolortheme.GetColor((c as MyMcFlatComboBox).BorderColor, mycolortheme.BorderColor);
-                (c as MyMcFlatComboBox).GridLineColor = mycolortheme.GetColor((c as MyMcFlatComboBox).GridLineColor, mycolortheme.ControlTextColor);
+                cmyfcb.BorderColor = mycolortheme.GetColor(cmyfcb.BorderColor, mycolortheme.BorderColor);
+                cmyfcb.GridLineColor = mycolortheme.GetColor(cmyfcb.GridLineColor, mycolortheme.ControlTextColor);
             }
-            else if (c is MyMcComboBox)
+            else if (c is MyMcComboBox cmycb)
             {
                 c.ForeColor = mycolortheme.GetColor(c.ForeColor, mycolortheme.WindowTextColor);
                 c.BackColor = mycolortheme.GetColor(c.BackColor, mycolortheme.WindowColor);
-                (c as MyMcComboBox).GridLineColor = mycolortheme.GetColor((c as MyMcComboBox).GridLineColor, mycolortheme.ControlTextColor);
+                cmycb.GridLineColor = mycolortheme.GetColor(cmycb.GridLineColor, mycolortheme.ControlTextColor);
             }
-            else if (c is FlatComboBox)
+            else if (c is FlatComboBox cfcb)
             {
                 c.ForeColor = mycolortheme.GetColor(c.ForeColor, mycolortheme.WindowTextColor);
                 c.BackColor = mycolortheme.GetColor(c.BackColor, mycolortheme.WindowColor);
-                (c as FlatComboBox).BorderColor = mycolortheme.GetColor((c as FlatComboBox).BorderColor, mycolortheme.BorderColor);
+                cfcb.BorderColor = mycolortheme.GetColor(cfcb.BorderColor, mycolortheme.BorderColor);
             }
             else if (c is ComboBox)
             {
@@ -386,9 +338,8 @@ namespace KlonsLIB.Forms
                 c.ForeColor = mycolortheme.GetColor(c.ForeColor, mycolortheme.WindowTextColor);
                 c.BackColor = mycolortheme.GetColor(c.BackColor, mycolortheme.WindowColor);
             }
-            else if (c is PropertyGrid)
+            else if (c is PropertyGrid prgr)
             {
-                var prgr = c as PropertyGrid;
                 prgr.BackColor = mycolortheme.GetColor(prgr.BackColor, mycolortheme.WindowColor);
                 prgr.ViewBackColor = prgr.BackColor;
                 prgr.ViewForeColor = mycolortheme.GetColor(prgr.ViewForeColor, mycolortheme.ControlTextColor);

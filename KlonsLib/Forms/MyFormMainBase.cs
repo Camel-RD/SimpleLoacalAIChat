@@ -45,19 +45,6 @@ namespace KlonsLIB.Forms
             base.OnLoad(e);
         }
 
-        public override void SetupMenuRenderer()
-        {
-            if (this.MainMenuStrip != null)
-            {
-                MainMenuStrip.ForeColor = Color.White;
-                MainMenuStrip.Renderer = new MyToolStripRenderer(MyColorTheme);
-                if (MyToolStrip != null)
-                    MyToolStrip.Renderer = MainMenuStrip.Renderer;
-                if (MyWindowListToolStrip != null)
-                    MyWindowListToolStrip.Renderer = MainMenuStrip.Renderer;
-            }
-        }
-
         public void ChangeBackColor(Color bc)
         {
             MdiClient ctlMDI;
@@ -92,7 +79,6 @@ namespace KlonsLIB.Forms
                 _windowListToolStrip = value;
             }
         }
-
 
         public bool CloseAllForms()
         {

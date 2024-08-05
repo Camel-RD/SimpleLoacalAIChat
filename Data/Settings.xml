@@ -6,6 +6,7 @@
   <FormFontName>Microsoft Sans Serif</FormFontName>
   <FormFontStyle>0</FormFontStyle>
   <AutoLoadPreset>false</AutoLoadPreset>
+  <ExtraModelsPath>D:\A3\_AI\_models\LLM.gguf</ExtraModelsPath>
   <WarnAboutMissingModels>false</WarnAboutMissingModels>
   <SColorDarkRequest>GreenYellow</SColorDarkRequest>
   <SColorLightRequest>#4D8000</SColorLightRequest>
