@@ -62,6 +62,7 @@ namespace SimpleLoacalAIChat
             CreateAllTabPages();
             CheckMenuColorTheme();
             CheckMyFontAndColors2();
+            pbProggress.Height = tslPreset.Height;
             ApplySetting();
 
             RTBSpellChecker = new RTBSpellChecker(tbPrompt);
@@ -737,7 +738,7 @@ namespace SimpleLoacalAIChat
         {
             var prompt = tbPrompt.Text;
             if (prompt.IsNOE()) return ("", "");
-            var parts = prompt.Split("[PREFILL RESPONSE]");
+            var parts = prompt.Split(TagPrefillResponse);
             prompt = parts[0];
             prompt = TrimEx(prompt);
             var prefilled_response = parts.Length > 1 ? parts[1] : "";
@@ -814,15 +815,20 @@ namespace SimpleLoacalAIChat
             tbOut.AddColoredText(text, DebugColor);
         }
 
+        const string EditorTagSystem = "[SYSTEM]";
+        const string EditorTagRequest = "[REQUEST]";
+        const string EditorTagResponse = "[RESPONSE]";
+        const string TagPrefillResponse = "[PREFILLED RESPONSE]";
+
         private void miIncludePrefilledResponse_Click(object sender, EventArgs e)
         {
             var prompt = tbPrompt.Text ?? "";
-            if (prompt.Contains("[PREFILLED RESPONSE]"))
+            if (prompt.Contains(TagPrefillResponse))
             {
                 ShowInfo("Prompt already contains prefilled response tag");
                 return;
             }
-            prompt += "\r\n\r\n[PREFILLED RESPONSE]\r\nprovide prefilled response here";
+            prompt += $"\r\n\r\n{TagPrefillResponse}\r\nprovide prefilled response here";
             tbPrompt.Text = prompt;
         }
 
@@ -835,12 +841,12 @@ namespace SimpleLoacalAIChat
                 if (!msg.EndsWith("\r\n\r\n")) msg += "\r\n";
                 if (item.Type == EChatHistoryItemType.Request)
                 {
-                    tbEditChat.AddColoredText("[REQUEST]\r\n", DebugColor);
+                    tbEditChat.AddColoredText($"{EditorTagRequest}\r\n", DebugColor);
                     tbEditChat.AddColoredText(msg, RequestColor);
                 }
                 else if (item.Type == EChatHistoryItemType.Response)
                 {
-                    tbEditChat.AddColoredText("[RESPONSE]\r\n", DebugColor);
+                    tbEditChat.AddColoredText($"{EditorTagResponse}\r\n", DebugColor);
                     tbEditChat.AppendText(msg);
                 }
             }
@@ -873,10 +879,6 @@ namespace SimpleLoacalAIChat
                 .ToList();
             return ret;
         }
-
-        const string EditorTagSystem = "[SYSTEM]";
-        const string EditorTagRequest = "[REQUEST]";
-        const string EditorTagResponse = "[RESPONSE]";
 
         List<ChatHistoryItem> ParseEditedChatText(string text)
         {
@@ -933,13 +935,13 @@ namespace SimpleLoacalAIChat
 
         private void tsbAddRequest_Click(object sender, EventArgs e)
         {
-            tbEditChat.AddColoredText($"[{EditorTagRequest}]\r\n", DebugColor);
+            tbEditChat.AddColoredText($"{EditorTagRequest}\r\n", DebugColor);
             tbEditChat.AppendText("   ");
         }
 
         private void tsbAddResponse_Click(object sender, EventArgs e)
         {
-            tbEditChat.AddColoredText($"[{EditorTagResponse}]\r\n", DebugColor);
+            tbEditChat.AddColoredText($"{EditorTagResponse}\r\n", DebugColor);
             tbEditChat.AppendText("   ");
         }
 

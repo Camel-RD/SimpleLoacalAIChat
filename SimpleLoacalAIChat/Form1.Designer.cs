@@ -97,7 +97,7 @@ namespace SimpleLoacalAIChat
             tbPrompt.Location = new Point(0, 0);
             tbPrompt.Margin = new Padding(2);
             tbPrompt.Name = "tbPrompt";
-            tbPrompt.Size = new Size(677, 135);
+            tbPrompt.Size = new Size(677, 137);
             tbPrompt.TabIndex = 2;
             tbPrompt.Text = "";
             // 
@@ -109,7 +109,7 @@ namespace SimpleLoacalAIChat
             tbOut.Location = new Point(0, 0);
             tbOut.Margin = new Padding(2);
             tbOut.Name = "tbOut";
-            tbOut.Size = new Size(677, 103);
+            tbOut.Size = new Size(677, 101);
             tbOut.TabIndex = 2;
             tbOut.Text = "";
             // 
@@ -142,6 +142,7 @@ namespace SimpleLoacalAIChat
             // 
             // pbProggress
             // 
+            pbProggress.AutoSize = false;
             pbProggress.Name = "pbProggress";
             pbProggress.Padding = new Padding(3, 0, 3, 0);
             pbProggress.Size = new Size(59, 22);
@@ -278,7 +279,7 @@ namespace SimpleLoacalAIChat
             mySplitContainer1.Panel2.Controls.Add(tbPrompt);
             mySplitContainer1.Panel2MinSize = 16;
             mySplitContainer1.Size = new Size(677, 244);
-            mySplitContainer1.SplitterDistance = 103;
+            mySplitContainer1.SplitterDistance = 101;
             mySplitContainer1.SplitterWidth = 6;
             mySplitContainer1.TabIndex = 0;
             // 
