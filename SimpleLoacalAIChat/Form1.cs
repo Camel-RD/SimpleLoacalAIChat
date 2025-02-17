@@ -315,7 +315,6 @@ namespace SimpleLoacalAIChat
             {
                 MainGpu = ActiveConfigPreset.MainGpu,
                 GpuLayers = ActiveConfigPreset.GpuLayers,
-                Seed = ActiveConfigPreset.Seed,
                 BatchSize = ActiveConfigPreset.BatchSize,
                 BatchThreadCount = ActiveConfigPreset.BatchThreadCount,
                 ThreadCount = ActiveConfigPreset.ThreadCount,
@@ -330,6 +329,7 @@ namespace SimpleLoacalAIChat
             if (ActiveSamplingParams == null) return new();
             var ret = new SamplingOptions()
             {
+                Seed = ActiveConfigPreset.Seed,
                 ExtraStopTokens = ActivePromptTemplate.GetExtraStopTokensArray(),
                 Mirostat = ActiveSamplingParams.Mirostat,
                 MirostatEta = ActiveSamplingParams.MirostatEta,

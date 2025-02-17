@@ -1,5 +1,4 @@
 ﻿using System.Buffers;
-using System.Diagnostics;
 using System.Text;
 
 namespace LlamaCppLib
@@ -50,22 +49,12 @@ namespace LlamaCppLib
             return text;
         }
 
-        public static Span<byte> llama_token_to_piece(llama_model model, llama_token token, bool special = true)
+        private static byte[] _bytes = new byte[1024];
+
+        public static byte[] llama_token_to_piece(llama_model model, int token, bool special)
         {
-            var n_pieces = 0;
-            var result = new byte[8];
-
-            n_pieces = Native.llama_token_to_piece(model, token, result, result.Length, 0, special);
-            if (n_pieces < 0)
-            {
-                result = new byte[-n_pieces];
-
-                var check = Native.llama_token_to_piece(model, token, result, result.Length, 0, special);
-                Debug.Assert(check == -n_pieces);
-                n_pieces = result.Length;
-            }
-
-            return new(result, 0, n_pieces);
+            var count = Native.llama_token_to_piece(model, token, _bytes, _bytes.Length, 0, special);
+            return _bytes[0..count];
         }
 
         public static unsafe string llama_apply_template(llama_context context, List<LlmMessage> messages, bool appendAssistant = true)
