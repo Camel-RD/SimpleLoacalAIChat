@@ -3,21 +3,6 @@
   <ChatConfig>
     <ConfigPresets>
       <ConfigPreset>
-        <Name>Gemma 2</Name>
-        <Model>gemma-2-27b-it-Q4_K_M.gguf</Model>
-        <TemplateName>Gemma 2</TemplateName>
-        <SamplerName>simple-1</SamplerName>
-        <SystemPrompt>You are a helpful AI assistant.</SystemPrompt>
-        <GpuLayers>12</GpuLayers>
-        <MainGpu>0</MainGpu>
-        <Seed>-1</Seed>
-        <ContextLength>4096</ContextLength>
-        <BatchSize>512</BatchSize>
-        <ThreadCount>4</ThreadCount>
-        <BatchThreadCount>1</BatchThreadCount>
-        <UseFlashAttention>false</UseFlashAttention>
-      </ConfigPreset>
-      <ConfigPreset>
         <Name>Dolphin dpo laser</Name>
         <Model>dolphin-2.6-mistral-7b-dpo-laser.Q4_0.gguf</Model>
         <TemplateName>ChatML</TemplateName>
@@ -94,48 +79,33 @@
       </ConfigPreset>
       <ConfigPreset>
         <Name>WizardLM-2-7B</Name>
-        <Model>WizardLM-2-7B-abliterated-Q5_K_M.gguf</Model>
+        <Model>WizardLM-2-7B.Q4_K_M.gguf</Model>
         <TemplateName>Vicuna</TemplateName>
         <SamplerName>Divine Intellect</SamplerName>
         <SystemPrompt>You are an assisntant. Answer users questions.</SystemPrompt>
-        <GpuLayers>50</GpuLayers>
+        <GpuLayers>25</GpuLayers>
         <MainGpu>0</MainGpu>
         <Seed>-1</Seed>
-        <ContextLength>4096</ContextLength>
+        <ContextLength>8000</ContextLength>
         <BatchSize>1024</BatchSize>
         <ThreadCount>6</ThreadCount>
         <BatchThreadCount>1</BatchThreadCount>
         <UseFlashAttention>true</UseFlashAttention>
       </ConfigPreset>
       <ConfigPreset>
-        <Name>Llama 3.1</Name>
+        <Name>Llama 3</Name>
         <Model>Meta-Llama-3.1-8B-Instruct-abliterated-Q4_K_M.gguf</Model>
         <TemplateName>Llama 3</TemplateName>
         <SamplerName>Mirostat</SamplerName>
         <SystemPrompt>You are a helpful assistant.</SystemPrompt>
-        <GpuLayers>50</GpuLayers>
+        <GpuLayers>20</GpuLayers>
         <MainGpu>0</MainGpu>
         <Seed>-1</Seed>
-        <ContextLength>8192</ContextLength>
+        <ContextLength>20000</ContextLength>
         <BatchSize>1024</BatchSize>
         <ThreadCount>6</ThreadCount>
         <BatchThreadCount>1</BatchThreadCount>
-        <UseFlashAttention>false</UseFlashAttention>
-      </ConfigPreset>
-      <ConfigPreset>
-        <Name>MS Phi-3 mini</Name>
-        <Model>Phi-3-mini-4k-instruct-Q4_K_M.gguf</Model>
-        <TemplateName>Phi3</TemplateName>
-        <SamplerName>simple-1</SamplerName>
-        <SystemPrompt>You are a helpful AI assistant.</SystemPrompt>
-        <GpuLayers>50</GpuLayers>
-        <MainGpu>0</MainGpu>
-        <Seed>-1</Seed>
-        <ContextLength>4096</ContextLength>
-        <BatchSize>512</BatchSize>
-        <ThreadCount>4</ThreadCount>
-        <BatchThreadCount>1</BatchThreadCount>
-        <UseFlashAttention>false</UseFlashAttention>
+        <UseFlashAttention>true</UseFlashAttention>
       </ConfigPreset>
       <ConfigPreset>
         <Name>Llama 3 - SFR</Name>
@@ -153,19 +123,19 @@
         <UseFlashAttention>false</UseFlashAttention>
       </ConfigPreset>
       <ConfigPreset>
-        <Name>MS Phi-3 mini 128k</Name>
-        <Model>Phi-3-mini-128k-instruct.Q4_K_M.gguf</Model>
+        <Name>MS Phi-3.1 mini 128k</Name>
+        <Model>Phi-3.1-mini-128k-instruct-Q4_K_M.gguf</Model>
         <TemplateName>Phi3</TemplateName>
         <SamplerName>simple-1</SamplerName>
         <SystemPrompt>You are a helpful AI assistant.</SystemPrompt>
         <GpuLayers>50</GpuLayers>
         <MainGpu>0</MainGpu>
         <Seed>-1</Seed>
-        <ContextLength>8192</ContextLength>
+        <ContextLength>10000</ContextLength>
         <BatchSize>512</BatchSize>
         <ThreadCount>4</ThreadCount>
         <BatchThreadCount>1</BatchThreadCount>
-        <UseFlashAttention>true</UseFlashAttention>
+        <UseFlashAttention>false</UseFlashAttention>
       </ConfigPreset>
       <ConfigPreset>
         <Name>Karen</Name>
@@ -182,13 +152,148 @@
         <BatchThreadCount>1</BatchThreadCount>
         <UseFlashAttention>false</UseFlashAttention>
       </ConfigPreset>
+      <ConfigPreset>
+        <Name>Gemma 2</Name>
+        <Model>gemma-2-27b-it-Q4_K_M.gguf</Model>
+        <TemplateName>Gemma 2</TemplateName>
+        <SamplerName>Divine Intellect</SamplerName>
+        <SystemPrompt>You are a helpful AI assistant.</SystemPrompt>
+        <GpuLayers>12</GpuLayers>
+        <MainGpu>0</MainGpu>
+        <Seed>-1</Seed>
+        <ContextLength>4096</ContextLength>
+        <BatchSize>512</BatchSize>
+        <ThreadCount>4</ThreadCount>
+        <BatchThreadCount>1</BatchThreadCount>
+        <UseFlashAttention>false</UseFlashAttention>
+      </ConfigPreset>
+      <ConfigPreset>
+        <Name>Llama 3 - grammar</Name>
+        <Model>Meta-Llama-3-8B-Instruct-Q4_K_M.gguf</Model>
+        <TemplateName>Llama 3 - grammar</TemplateName>
+        <SamplerName>Mirostat</SamplerName>
+        <SystemPrompt />
+        <GpuLayers>50</GpuLayers>
+        <MainGpu>0</MainGpu>
+        <Seed>-1</Seed>
+        <ContextLength>8192</ContextLength>
+        <BatchSize>1024</BatchSize>
+        <ThreadCount>6</ThreadCount>
+        <BatchThreadCount>1</BatchThreadCount>
+        <UseFlashAttention>false</UseFlashAttention>
+      </ConfigPreset>
+      <ConfigPreset>
+        <Name>DeepSeek 2 Coder Lite</Name>
+        <Model>DeepSeek-Coder-V2-Lite-Instruct-Q4_K_M.gguf</Model>
+        <TemplateName>DeepSeek 2 Coder Lite</TemplateName>
+        <SamplerName>Coder</SamplerName>
+        <SystemPrompt />
+        <GpuLayers>15</GpuLayers>
+        <MainGpu>0</MainGpu>
+        <Seed>-1</Seed>
+        <ContextLength>4096</ContextLength>
+        <BatchSize>1024</BatchSize>
+        <ThreadCount>1</ThreadCount>
+        <BatchThreadCount>1</BatchThreadCount>
+        <UseFlashAttention>false</UseFlashAttention>
+      </ConfigPreset>
+      <ConfigPreset>
+        <Name>Qwen2.5 Coder 7B</Name>
+        <Model>Qwen2.5-Coder-7B-Instruct-Q4_K_M.gguf</Model>
+        <TemplateName>ChatML</TemplateName>
+        <SamplerName>Coder</SamplerName>
+        <SystemPrompt>You are a helpful assistant.</SystemPrompt>
+        <GpuLayers>50</GpuLayers>
+        <MainGpu>0</MainGpu>
+        <Seed>-1</Seed>
+        <ContextLength>8000</ContextLength>
+        <BatchSize>1024</BatchSize>
+        <ThreadCount>1</ThreadCount>
+        <BatchThreadCount>1</BatchThreadCount>
+        <UseFlashAttention>false</UseFlashAttention>
+      </ConfigPreset>
+      <ConfigPreset>
+        <Name>Qwen2.5 Coder 32B</Name>
+        <Model>Qwen2.5-Coder-32B-Instruct-Q4_K_M.gguf</Model>
+        <TemplateName>ChatML</TemplateName>
+        <SamplerName>Coder</SamplerName>
+        <SystemPrompt>You are a helpful assistant.</SystemPrompt>
+        <GpuLayers>15</GpuLayers>
+        <MainGpu>0</MainGpu>
+        <Seed>-1</Seed>
+        <ContextLength>8000</ContextLength>
+        <BatchSize>1024</BatchSize>
+        <ThreadCount>4</ThreadCount>
+        <BatchThreadCount>1</BatchThreadCount>
+        <UseFlashAttention>true</UseFlashAttention>
+      </ConfigPreset>
+      <ConfigPreset>
+        <Name>Qwen2.5-Instruct-7B</Name>
+        <Model>Qwen2.5-Coder-7B-Instruct-Q4_K_M.gguf</Model>
+        <TemplateName>ChatML</TemplateName>
+        <SamplerName>Divine Intellect</SamplerName>
+        <SystemPrompt>You are Qwen, created by Alibaba Cloud. You are a helpful assistant.</SystemPrompt>
+        <GpuLayers>50</GpuLayers>
+        <MainGpu>0</MainGpu>
+        <Seed>-1</Seed>
+        <ContextLength>8000</ContextLength>
+        <BatchSize>1024</BatchSize>
+        <ThreadCount>1</ThreadCount>
+        <BatchThreadCount>1</BatchThreadCount>
+        <UseFlashAttention>false</UseFlashAttention>
+      </ConfigPreset>
+      <ConfigPreset>
+        <Name>GMR</Name>
+        <Model>GRMR-3B-Instruct.Q5_K_M.gguf</Model>
+        <TemplateName>GMR</TemplateName>
+        <SamplerName>Debug-deterministic</SamplerName>
+        <SystemPrompt />
+        <GpuLayers>50</GpuLayers>
+        <MainGpu>0</MainGpu>
+        <Seed>-1</Seed>
+        <ContextLength>512</ContextLength>
+        <BatchSize>64</BatchSize>
+        <ThreadCount>1</ThreadCount>
+        <BatchThreadCount>1</BatchThreadCount>
+        <UseFlashAttention>false</UseFlashAttention>
+      </ConfigPreset>
+      <ConfigPreset>
+        <Name>Qwen2.5 Coder 14B</Name>
+        <Model>qwen2.5-coder-14b-instruct-q4_k_m.gguf</Model>
+        <TemplateName>ChatML</TemplateName>
+        <SamplerName>Coder</SamplerName>
+        <SystemPrompt>You are a helpful assistant.</SystemPrompt>
+        <GpuLayers>30</GpuLayers>
+        <MainGpu>0</MainGpu>
+        <Seed>-1</Seed>
+        <ContextLength>8000</ContextLength>
+        <BatchSize>1024</BatchSize>
+        <ThreadCount>4</ThreadCount>
+        <BatchThreadCount>1</BatchThreadCount>
+        <UseFlashAttention>true</UseFlashAttention>
+      </ConfigPreset>
+      <ConfigPreset>
+        <Name>Gemma 3</Name>
+        <Model>gemma-3-27b-it-Q4_K_M.gguf</Model>
+        <TemplateName>Gemma 2</TemplateName>
+        <SamplerName>Gemma 3</SamplerName>
+        <SystemPrompt>You are a helpful AI assistant.</SystemPrompt>
+        <GpuLayers>15</GpuLayers>
+        <MainGpu>0</MainGpu>
+        <Seed>9999999</Seed>
+        <ContextLength>4096</ContextLength>
+        <BatchSize>512</BatchSize>
+        <ThreadCount>4</ThreadCount>
+        <BatchThreadCount>1</BatchThreadCount>
+        <UseFlashAttention>false</UseFlashAttention>
+      </ConfigPreset>
     </ConfigPresets>
     <PromptTemplates>
       <PromptTemplate>
         <Name>ChatML</Name>
-        <System>&lt;|im_start|&gt;system\n{0}&lt;|im_end|&gt;</System>
-        <Prompt>\n&lt;|im_start|&gt;user\n{0}&lt;|im_end|&gt;\n&lt;|im_start|&gt;assistant\n</Prompt>
-        <Response>{0}&lt;|im_end|&gt;</Response>
+        <System>&lt;|im_start|&gt;system\n{0}&lt;|im_end|&gt;\n</System>
+        <Prompt>&lt;|im_start|&gt;user\n{0}&lt;|im_end|&gt;\n&lt;|im_start|&gt;assistant\n</Prompt>
+        <Response>{0}&lt;|im_end|&gt;\n</Response>
         <ExtraStopTokens>&lt;|im_end|&gt;</ExtraStopTokens>
         <PrependBosToken xsi:nil="true" />
       </PromptTemplate>
@@ -213,12 +318,6 @@
         <Prompt>USER: {0}\nASSISTANT: </Prompt>
         <Response>{0}\n</Response>
         <PrependBosToken xsi:nil="true" />
-      </PromptTemplate>
-      <PromptTemplate>
-        <Name>Gemma 2</Name>
-        <Prompt>&lt;start_of_turn&gt;user\n{0}&lt;end_of_turn&gt;\n&lt;start_of_turn&gt;model\n</Prompt>
-        <Response>{0}&lt;end_of_turn&gt;\n</Response>
-        <PrependBosToken>true</PrependBosToken>
       </PromptTemplate>
       <PromptTemplate>
         <Name>Llama 3</Name>
@@ -251,11 +350,52 @@
         <ExtraStopTokens>&lt;|im_end|&gt;</ExtraStopTokens>
         <PrependBosToken xsi:nil="true" />
       </PromptTemplate>
+      <PromptTemplate>
+        <Name>Gemma 2</Name>
+        <Prompt>&lt;start_of_turn&gt;user\n{0}&lt;end_of_turn&gt;\n&lt;start_of_turn&gt;model\n</Prompt>
+        <Response>{0}&lt;end_of_turn&gt;\n</Response>
+        <PrependBosToken>true</PrependBosToken>
+      </PromptTemplate>
+      <PromptTemplate>
+        <Name>Llama 3 - grammar</Name>
+        <System>&lt;|begin_of_text|&gt;&lt;|start_header_id|&gt;system&lt;|end_header_id|&gt;\n\nCorrect and rephrase user text grammar errors in casual English.&lt;|eot_id|&gt;&lt;|start_header_id|&gt;user&lt;|end_header_id|&gt;\n\nshe no went to market&lt;|eot_id|&gt;&lt;|start_header_id|&gt;assistant&lt;|end_header_id|&gt;\n\nShe didn't go the the market.&lt;|eot_id|&gt;</System>
+        <Prompt>&lt;|start_header_id|&gt;user&lt;|end_header_id|&gt;\n\n{0}&lt;|eot_id|&gt;&lt;|start_header_id|&gt;assistant&lt;|end_header_id|&gt;\n\n</Prompt>
+        <Response>{0}&lt;|eot_id|&gt;</Response>
+        <ExtraStopTokens>&lt;|eot_id|&gt;</ExtraStopTokens>
+        <PrependBosToken xsi:nil="true" />
+      </PromptTemplate>
+      <PromptTemplate>
+        <Name>DeepSeek 2 Coder Lite</Name>
+        <System />
+        <Prompt>User: {0}\n\nAssistant:</Prompt>
+        <Response> {0}&lt;｜end▁of▁sentence｜&gt;</Response>
+        <PrependBosToken>true</PrependBosToken>
+      </PromptTemplate>
+      <PromptTemplate>
+        <Name>Vicuma: Anna, John</Name>
+        <System>{0}\n</System>
+        <Prompt>John: {0}\nAnna: </Prompt>
+        <Response>{0}\n</Response>
+        <ExtraStopTokens>John:</ExtraStopTokens>
+        <PrependBosToken xsi:nil="true" />
+      </PromptTemplate>
+      <PromptTemplate>
+        <Name>Simple</Name>
+        <Prompt>{0}</Prompt>
+        <Response>\n{0}</Response>
+        <PrependBosToken>true</PrependBosToken>
+      </PromptTemplate>
+      <PromptTemplate>
+        <Name>GMR</Name>
+        <Prompt>### Original Text:\n{0}\n\n### Corrected Text:\n</Prompt>
+        <Response>{0}\n\n</Response>
+        <PrependBosToken>true</PrependBosToken>
+      </PromptTemplate>
     </PromptTemplates>
     <SamplingParams>
       <SamplingParams>
         <Name>Divine Intellect</Name>
-        <ResponseMaxTokenCount>1024</ResponseMaxTokenCount>
+        <ResponseMaxTokenCount>2048</ResponseMaxTokenCount>
         <Temperature>1.31</Temperature>
         <TopK>49</TopK>
         <TopP>0.14</TopP>
@@ -467,6 +607,23 @@
         <TfsZ>1</TfsZ>
         <TypicalP>1</TypicalP>
         <Mirostat>MirostatV2</Mirostat>
+        <MirostatTau>5</MirostatTau>
+        <MirostatEta>0.1</MirostatEta>
+        <PenaltyLastN>64</PenaltyLastN>
+        <PenaltyRepeat>1</PenaltyRepeat>
+        <PenaltyFreq>0</PenaltyFreq>
+        <PenaltyPresent>0</PenaltyPresent>
+      </SamplingParams>
+      <SamplingParams>
+        <Name>Gemma 3</Name>
+        <ResponseMaxTokenCount>2048</ResponseMaxTokenCount>
+        <Temperature>1</Temperature>
+        <TopK>64</TopK>
+        <TopP>0.95</TopP>
+        <MinP>0</MinP>
+        <TfsZ>1</TfsZ>
+        <TypicalP>1</TypicalP>
+        <Mirostat>Disabled</Mirostat>
         <MirostatTau>5</MirostatTau>
         <MirostatEta>0.1</MirostatEta>
         <PenaltyLastN>64</PenaltyLastN>

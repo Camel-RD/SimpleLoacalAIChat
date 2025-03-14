@@ -3,6 +3,7 @@ using System.Text;
 
 namespace LlamaCppLib
 {
+    using llama_vocab = System.IntPtr;
     using llama_model = System.IntPtr;
     using llama_context = System.IntPtr;
     using llama_token = System.Int32;
@@ -31,20 +32,22 @@ namespace LlamaCppLib
 
         public static int[] llama_tokenize(llama_model model, byte[] text, bool add_special = false, bool parse_special = false)
         {
-            var length = -Native.llama_tokenize(model, text, text.Length, [], 0, add_special, parse_special);
+            var vocab = Native.llama_model_get_vocab(model);
+            var length = -Native.llama_tokenize(vocab, text, text.Length, [], 0, add_special, parse_special);
 
             var tokens = new int[length];
-            Native.llama_tokenize(model, text, text.Length, tokens, tokens.Length, add_special, parse_special);
+            Native.llama_tokenize(vocab, text, text.Length, tokens, tokens.Length, add_special, parse_special);
 
             return tokens;
         }
 
         public static byte[] llama_detokenize(llama_model model, int[] tokens, bool remove_special = false, bool unparse_special = false)
         {
-            var length = -Native.llama_detokenize(model, tokens, tokens.Length, [], 0, remove_special, unparse_special);
+            var vocab = Native.llama_model_get_vocab(model);
+            var length = -Native.llama_detokenize(vocab, tokens, tokens.Length, [], 0, remove_special, unparse_special);
 
             var text = new byte[length];
-            Native.llama_detokenize(model, tokens, tokens.Length, text, text.Length, remove_special, unparse_special);
+            Native.llama_detokenize(vocab, tokens, tokens.Length, text, text.Length, remove_special, unparse_special);
 
             return text;
         }
@@ -53,7 +56,8 @@ namespace LlamaCppLib
 
         public static byte[] llama_token_to_piece(llama_model model, int token, bool special)
         {
-            var count = Native.llama_token_to_piece(model, token, _bytes, _bytes.Length, 0, special);
+            var vocab = Native.llama_model_get_vocab(model);
+            var count = Native.llama_token_to_piece(vocab, token, _bytes, _bytes.Length, 0, special);
             return _bytes[0..count];
         }
 
@@ -85,9 +89,11 @@ namespace LlamaCppLib
                         content = (byte*)contentHandles[i].Pointer
                     };
                 }
-
+                
+                var model = Native.llama_get_model(context);
+                var template = Native.llama_model_chat_template(model, IntPtr.Zero);
                 var buffer = new byte[Native.llama_n_ctx(context) * 8];
-                var length = Native.llama_chat_apply_template(Native.llama_get_model(context), null, chat, (nuint)chat.Length, appendAssistant, buffer, buffer.Length);
+                var length = Native.llama_chat_apply_template(template, chat, (nuint)chat.Length, appendAssistant, buffer, buffer.Length);
                 var text = encoding.GetString(buffer, 0, length);
 
                 return text;

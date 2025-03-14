@@ -93,7 +93,7 @@ namespace LlamaCppLib
                 mparams.progress_callback_user_data = GCHandle.ToIntPtr(progressCallbackHandle.Handle).ToPointer();
             }
 
-            _model.Create(() => llama_load_model_from_file(modelPath, mparams), llama_free_model);
+            _model.Create(() => llama_model_load_from_file(modelPath, mparams), llama_model_free);
 
             var cparams = llama_context_default_params();
             cparams.n_ctx = (uint)_modelOptions.ContextLength;
@@ -108,7 +108,7 @@ namespace LlamaCppLib
             cparams.abort_callback = &AbortCallback;
             cparams.abort_callback_data = GCHandle.ToIntPtr(_cancellationTokenHandle.Handle).ToPointer();
 
-            _context.Create(() => llama_new_context_with_model(_model.Handle, cparams), llama_free);
+            _context.Create(() => llama_init_from_model(_model.Handle, cparams), llama_free);
 
             var sparams = llama_sampler_chain_default_params();
             sparams.no_perf = 0;
@@ -146,8 +146,8 @@ namespace LlamaCppLib
         public nint ContextNativeHandle { get => _context.Handle; }
 
         public int ContextLength => Loaded ? (int)llama_n_ctx(_context.Handle) : 0;
-        public int TrainingContextLength => Loaded ? llama_n_ctx_train(_model.Handle) : 0;
-        public int LayerCount => Loaded ? llama_n_layer(_model.Handle) : 0;
+        public int TrainingContextLength => Loaded ? llama_model_n_ctx_train(_model.Handle) : 0;
+        public int LayerCount => Loaded ? llama_model_n_layer(_model.Handle) : 0;
 
         public LlmPrompt Prompt(
             string promptText,
@@ -156,10 +156,15 @@ namespace LlamaCppLib
             bool? processSpecialTokens = default
         )
         {
+            var vocab = Native.llama_model_get_vocab(_model.Handle);
+            bool _prependBosToken = prependBosToken ??
+                llama_vocab_get_add_bos(vocab) > 0 ? true :
+                llama_vocab_type(vocab) == _llama_vocab_type.LLAMA_VOCAB_TYPE_SPM;
+
             var prompt = new LlmPrompt(
                 promptText,
                 samplingOptions ?? new(),
-                prependBosToken ?? llama_add_bos_token(_model.Handle) > 0 ? true : llama_vocab_type(_model.Handle) == _llama_vocab_type.LLAMA_VOCAB_TYPE_SPM,
+                _prependBosToken,
                 processSpecialTokens ?? true
             );
 
@@ -286,7 +291,7 @@ namespace LlamaCppLib
                             sequence.Prompt.TokenChannel.Writer.Complete(new InsufficientMemoryException());
 
                         sequences.RemoveAll(sequence => true);
-                        llama_kv_cache_clear(_context.Handle);
+                        llama_kv_self_clear(_context.Handle);
 
                         continue;
                     }
@@ -330,11 +335,13 @@ namespace LlamaCppLib
                             sequence.Prompt.PromptingSpeed = sequence.PosResponse / ((sequence.T2 - sequence.T1) ?? new()).TotalSeconds;
                         }
 
+                        var vocab = Native.llama_model_get_vocab(_model.Handle);
+
                         var stop = false
                             || sequence.PosTokens >= sequence.Tokens.Length - 1
                             || sequence.PosTokens - sequence.PosResponse >= sequence.SamplingOptions.ResponseMaxTokenCount
                             || (sequence.StopTokens?.Contains(token) ?? false)
-                            || llama_token_is_eog(_model.Handle, token);
+                            || llama_vocab_is_eog(vocab, token);
 
                         if (!stop)
                         {
@@ -356,7 +363,7 @@ namespace LlamaCppLib
                             else
                                 sequence.Prompt.TokenChannel.Writer.Complete();
 
-                            llama_kv_cache_seq_rm(_context.Handle, sequence.Id, -1, -1);
+                            llama_kv_self_seq_rm(_context.Handle, sequence.Id, -1, -1);
                             sequences.Remove(sequence.Id);
                         }
                     }

@@ -2,6 +2,7 @@
 
 namespace LlamaCppLib
 {
+    using llama_vocab = System.IntPtr;
     using llama_model = System.IntPtr;
     using llama_context = System.IntPtr;
     using llama_sampler = System.IntPtr;
@@ -174,8 +175,6 @@ namespace LlamaCppLib
 
             public readonly float* tensor_split;
 
-            public byte* rpc_servers;
-
             public llama_progress_callback progress_callback;
 
             public void* progress_callback_user_data;
@@ -260,18 +259,22 @@ namespace LlamaCppLib
         public static partial void llama_backend_free();
 
         [LibraryImport(LibName)]
-        public static partial llama_model llama_load_model_from_file(
+        public static partial llama_model llama_model_load_from_file(
             [MarshalAs(UnmanagedType.LPStr)] string path_model,
             llama_model_params mparams);
 
         [LibraryImport(LibName)]
-        public static partial void llama_free_model(
+        public static partial void llama_model_free(
             llama_model model);
 
         [LibraryImport(LibName)]
-        public static partial llama_context llama_new_context_with_model(
+        public static partial llama_context llama_init_from_model(
             llama_model model,
             llama_context_params cparams);
+
+        [LibraryImport(LibName)]
+        public static partial llama_vocab llama_model_get_vocab(
+            llama_model model);
 
         [LibraryImport(LibName)]
         public static partial void llama_free(
@@ -294,19 +297,19 @@ namespace LlamaCppLib
             llama_context ctx);
 
         [LibraryImport(LibName)]
-        public static partial int llama_n_vocab(
+        public static partial int llama_vocab_n_tokens(
+            llama_vocab vocab);
+
+        [LibraryImport(LibName)]
+        public static partial int llama_model_n_ctx_train(
             llama_model model);
 
         [LibraryImport(LibName)]
-        public static partial int llama_n_ctx_train(
+        public static partial int llama_model_n_embd(
             llama_model model);
 
         [LibraryImport(LibName)]
-        public static partial int llama_n_embd(
-            llama_model model);
-
-        [LibraryImport(LibName)]
-        public static partial int llama_n_layer(
+        public static partial int llama_model_n_layer(
             llama_model model);
 
         [LibraryImport(LibName)]
@@ -314,12 +317,20 @@ namespace LlamaCppLib
             llama_context ctx);
 
         [LibraryImport(LibName)]
+        public static partial IntPtr llama_model_chat_template(
+            llama_model model, [MarshalAs(UnmanagedType.LPStr)] string? name);
+
+        [LibraryImport(LibName)]
+        public static partial IntPtr llama_model_chat_template(
+            llama_model model, IntPtr name);
+
+        [LibraryImport(LibName)]
         public static partial _llama_pooling_type llama_pooling_type(
             llama_context ctx);
 
         [LibraryImport(LibName)]
         public static partial _llama_vocab_type llama_vocab_type(
-            llama_model model);
+            llama_vocab vocab);
 
         [LibraryImport(LibName)]
         public static partial int llama_model_meta_val_str(
@@ -361,12 +372,12 @@ namespace LlamaCppLib
         //
 
         [LibraryImport(LibName)]
-        public static partial void llama_kv_cache_clear(
+        public static partial void llama_kv_self_clear(
             llama_context ctx);
 
         [LibraryImport(LibName)]
         [return: MarshalAs(UnmanagedType.I1)]
-        public static partial bool llama_kv_cache_seq_rm(
+        public static partial bool llama_kv_self_seq_rm(
             llama_context ctx,
             llama_seq_id seq_id,
             llama_pos p0,
@@ -499,21 +510,21 @@ namespace LlamaCppLib
 
         [LibraryImport(LibName)]
         [return: MarshalAs(UnmanagedType.I1)]
-        public static partial bool llama_token_is_eog(
-            llama_model model,
+        public static partial bool llama_vocab_is_eog(
+            llama_vocab vocab,
             llama_token token);
 
         [LibraryImport(LibName)]
-        public static partial llama_token llama_token_eos(
-            llama_model model);
+        public static partial llama_token llama_vocab_eos(
+            llama_vocab vocab);
 
         [LibraryImport(LibName)]
-        public static partial int llama_add_bos_token(
-            llama_model model);
+        public static partial int llama_vocab_get_add_bos(
+            llama_vocab vocab);
 
         [LibraryImport(LibName)]
-        public static partial int llama_add_eos_token(
-            llama_model model);
+        public static partial int llama_vocab_get_add_eos(
+            llama_vocab vocab);
 
         //
         // Tokenization
@@ -521,7 +532,7 @@ namespace LlamaCppLib
 
         [LibraryImport(LibName)]
         public static partial int llama_tokenize(
-            llama_model model,
+            llama_vocab vocab,
             [In] byte[] text,
             int text_len,
             [In, Out] llama_token[] tokens,
@@ -531,7 +542,7 @@ namespace LlamaCppLib
 
         [LibraryImport(LibName)]
         public static partial int llama_token_to_piece(
-            llama_model model,
+            llama_vocab vocab,
             llama_token token,
             [In, Out] byte[] buf,
             int length,
@@ -540,7 +551,7 @@ namespace LlamaCppLib
 
         [LibraryImport(LibName)]
         public static partial int llama_detokenize(
-            llama_model model,
+            llama_vocab vocab,
             [In] llama_token[] tokens,
             int n_tokens,
             [In, Out] byte[] text,
@@ -554,8 +565,16 @@ namespace LlamaCppLib
 
         [LibraryImport(LibName)]
         public static partial int llama_chat_apply_template(
-            nint model,
             [In] byte[]? tmpl,
+            [In] llama_chat_message[] chat,
+            nuint n_msg,
+            [MarshalAs(UnmanagedType.I1)] bool add_ass,
+            [In, Out] byte[] buf,
+            int length);
+
+        [LibraryImport(LibName)]
+        public static partial int llama_chat_apply_template(
+            IntPtr tmpl,
             [In] llama_chat_message[] chat,
             nuint n_msg,
             [MarshalAs(UnmanagedType.I1)] bool add_ass,
@@ -649,7 +668,7 @@ namespace LlamaCppLib
 
         [LibraryImport(LibName)]
         public static partial llama_sampler llama_sampler_init_dry(
-            llama_model model,
+            llama_vocab vocab,
             float dry_multiplier,
             float dry_base,
             int dry_allowed_length,
