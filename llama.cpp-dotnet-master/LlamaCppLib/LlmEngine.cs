@@ -272,13 +272,6 @@ namespace LlamaCppLib
                     continue;
                 }
 
-                //var vocab = Native.llama_model_get_vocab(_model.Handle);
-                var vocab = new UnmanagedResource<nint>();
-                vocab.Create(
-                    () => Native.llama_model_get_vocab(_model.Handle),
-                    Marshal.FreeHGlobal);
-                using var v2 = vocab;
-
                 var batchSize = _modelOptions.BatchSize;
                 for (var i = 0; i < batch.n_tokens; i += batchSize)
                 {
@@ -351,7 +344,7 @@ namespace LlamaCppLib
                             || sequence.PosTokens >= sequence.Tokens.Length - 1
                             || sequence.PosTokens - sequence.PosResponse >= sequence.SamplingOptions.ResponseMaxTokenCount
                             || (sequence.StopTokens?.Contains(token) ?? false)
-                            || llama_vocab_is_eog(vocab.Handle, token);
+                            || llama_vocab_is_eog(_vocab.Handle, token);
 
                         if (!stop)
                         {
