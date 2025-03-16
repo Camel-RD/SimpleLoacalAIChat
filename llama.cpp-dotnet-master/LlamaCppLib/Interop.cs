@@ -1,4 +1,5 @@
 ﻿using System.Buffers;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace LlamaCppLib
@@ -30,9 +31,8 @@ namespace LlamaCppLib
             batch.n_tokens = 0;
         }
 
-        public static int[] llama_tokenize(llama_model model, byte[] text, bool add_special = false, bool parse_special = false)
+        public static int[] llama_tokenize(llama_vocab vocab, byte[] text, bool add_special = false, bool parse_special = false)
         {
-            var vocab = Native.llama_model_get_vocab(model);
             var length = -Native.llama_tokenize(vocab, text, text.Length, [], 0, add_special, parse_special);
 
             var tokens = new int[length];
@@ -41,9 +41,8 @@ namespace LlamaCppLib
             return tokens;
         }
 
-        public static byte[] llama_detokenize(llama_model model, int[] tokens, bool remove_special = false, bool unparse_special = false)
+        public static byte[] llama_detokenize(llama_vocab vocab, int[] tokens, bool remove_special = false, bool unparse_special = false)
         {
-            var vocab = Native.llama_model_get_vocab(model);
             var length = -Native.llama_detokenize(vocab, tokens, tokens.Length, [], 0, remove_special, unparse_special);
 
             var text = new byte[length];
@@ -54,10 +53,10 @@ namespace LlamaCppLib
 
         private static byte[] _bytes = new byte[1024];
 
-        public static byte[] llama_token_to_piece(llama_model model, int token, bool special)
+        public static byte[] llama_token_to_piece(llama_vocab vocab, int token, bool special)
         {
-            var vocab = Native.llama_model_get_vocab(model);
             var count = Native.llama_token_to_piece(vocab, token, _bytes, _bytes.Length, 0, special);
+
             return _bytes[0..count];
         }
 
@@ -95,7 +94,7 @@ namespace LlamaCppLib
                 var buffer = new byte[Native.llama_n_ctx(context) * 8];
                 var length = Native.llama_chat_apply_template(template, chat, (nuint)chat.Length, appendAssistant, buffer, buffer.Length);
                 var text = encoding.GetString(buffer, 0, length);
-
+                Marshal.FreeHGlobal(template);
                 return text;
             }
             finally

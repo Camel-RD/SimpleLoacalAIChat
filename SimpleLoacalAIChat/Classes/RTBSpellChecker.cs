@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace SimpleLoacalAIChat
 {
@@ -24,7 +25,8 @@ namespace SimpleLoacalAIChat
         bool texthasredwords = false;
         Dictionary<string, bool> WordsTested = new Dictionary<string, bool>();
         bool disposedValue;
-        int TestDalay = 3000;
+        int testDalay = 3000;
+        System.Windows.Forms.Timer timer = null;
 
         public RTBSpellChecker(RichTextBox rtb)
         {
@@ -34,6 +36,20 @@ namespace SimpleLoacalAIChat
             stopwatch.Start();
             RTB.KeyDown += rtb_KeyDown;
             RTB.MouseUp += rtb_MouseUp;
+            timer = new System.Windows.Forms.Timer();
+            timer.Tick += Timer_Tick;
+            timer.Interval = testDalay;
+            timer.Start();
+        }
+
+        private void Timer_Tick(object sender, EventArgs e)
+        {
+            if (lastkeyprestime == 0) return;
+            timer.Stop();
+            if (RTB.Disposing || RTB.IsDisposed) return;
+            DoAfterTextChanged();
+            lastkeyprestime = 0;
+            timer.Enabled = true;
         }
 
         #region Dispose
@@ -44,6 +60,7 @@ namespace SimpleLoacalAIChat
                 if (disposing)
                 {
                     stopwatch.Stop();
+                    timer.Stop();
                     RTB.KeyDown -= rtb_KeyDown;
                     RTB.MouseUp -= rtb_MouseUp;
                     SuggestionsMenu?.Dispose();
@@ -75,7 +92,8 @@ namespace SimpleLoacalAIChat
         private void rtb_KeyDown(object sender, KeyEventArgs e)
         {
             lastkeyprestime = stopwatch.ElapsedMilliseconds;
-            RunTicker(TestDalay);
+            timer.Stop();
+            timer.Enabled = true;
         }
 
         private void SuggestionsMenu_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
@@ -146,37 +164,7 @@ namespace SimpleLoacalAIChat
             RTB.SelectionStart = curpos;
             RTB.SelectionLength = cursel;
 
-            lastkeyprestime = stopwatch.ElapsedMilliseconds;
-        }
-
-        public void DoChecks()
-        {
-            if (stopwatch.ElapsedMilliseconds - lastkeyprestime < TestDalay)
-            {
-                RunTicker(500);
-                return;
-            }
-            DoAfterTextChanged();
-        }
-
-        volatile int TickerIsActive = 0;
-        volatile int RequestTick = 0;
-
-        public void RunTicker(int ms)
-        {
-            RequestTick = 1;
-            if (TickerIsActive == 1) return;
-            TickerIsActive = 1;
-            Task.Run(async () =>
-            {
-                await Task.Delay(ms);
-                while (Interlocked.CompareExchange(ref RequestTick, 0, 1) == 1)
-                {
-                    Form.Invoke(DoChecks);
-                    await Task.Delay(500);
-                }
-                TickerIsActive = 0;
-            });
+            lastkeyprestime = 0;
         }
 
         public void ReplaceCurrentWordWith(string word)

@@ -15,6 +15,7 @@ namespace LlamaCppLib
         private UnmanagedResource<nint> _model = new();
         private UnmanagedResource<nint> _context = new();
         private UnmanagedResource<nint> _sampler = new();
+        private UnmanagedResource<nint> _vocab = new();
         private UnmanagedResource<llama_batch> _batch = new();
 
         private LlmEngineOptions _engineOptions = new();
@@ -53,6 +54,7 @@ namespace LlamaCppLib
                 _context.Dispose();
                 _model.Dispose();
                 _backend.Dispose();
+                _vocab.Dispose();
 
                 _disposed = true;
             }
@@ -117,6 +119,8 @@ namespace LlamaCppLib
 
             _batch.Create(() => llama_batch_init((int)llama_n_ctx(_context.Handle), 0, 1), llama_batch_free);
 
+            _vocab.Create(() => Native.llama_model_get_vocab(_model.Handle), Marshal.FreeHGlobal);
+
             _StartAsync();
 
             if (waitForMainLoop)
@@ -140,7 +144,8 @@ namespace LlamaCppLib
 
         public bool Loaded => _mainLoop?.Status == TaskStatus.Running || _model.Created;
 
-        public Span<int> Tokenize(string prompt, bool prependBosToken = false, bool processSpecialTokens = false) => llama_tokenize(_model.Handle, Encoding.UTF8.GetBytes(prompt), prependBosToken, processSpecialTokens);
+        public Span<int> Tokenize(string prompt, bool prependBosToken = false, bool processSpecialTokens = false) => 
+            llama_tokenize(_vocab.Handle, Encoding.UTF8.GetBytes(prompt), prependBosToken, processSpecialTokens);
 
         public nint ModelNativeHandle { get => _model.Handle; }
         public nint ContextNativeHandle { get => _context.Handle; }
@@ -267,6 +272,13 @@ namespace LlamaCppLib
                     continue;
                 }
 
+                //var vocab = Native.llama_model_get_vocab(_model.Handle);
+                var vocab = new UnmanagedResource<nint>();
+                vocab.Create(
+                    () => Native.llama_model_get_vocab(_model.Handle),
+                    Marshal.FreeHGlobal);
+                using var v2 = vocab;
+
                 var batchSize = _modelOptions.BatchSize;
                 for (var i = 0; i < batch.n_tokens; i += batchSize)
                 {
@@ -335,19 +347,17 @@ namespace LlamaCppLib
                             sequence.Prompt.PromptingSpeed = sequence.PosResponse / ((sequence.T2 - sequence.T1) ?? new()).TotalSeconds;
                         }
 
-                        var vocab = Native.llama_model_get_vocab(_model.Handle);
-
                         var stop = false
                             || sequence.PosTokens >= sequence.Tokens.Length - 1
                             || sequence.PosTokens - sequence.PosResponse >= sequence.SamplingOptions.ResponseMaxTokenCount
                             || (sequence.StopTokens?.Contains(token) ?? false)
-                            || llama_vocab_is_eog(vocab, token);
+                            || llama_vocab_is_eog(vocab.Handle, token);
 
                         if (!stop)
                         {
                             sequence.Prompt.TokenChannel.Writer.TryWrite(
                                 //llama_detokenize(_model.Handle, [token])
-                                Interop.llama_token_to_piece(_model.Handle, token, true)
+                                Interop.llama_token_to_piece(_vocab.Handle, token, true)
                             );
 
                             sequence.Tokens[sequence.PosTokens++] = token;

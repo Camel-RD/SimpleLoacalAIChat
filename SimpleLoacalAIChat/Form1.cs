@@ -386,8 +386,20 @@ namespace SimpleLoacalAIChat
                     sb.Append(token);
                     AddStreamingText(token);
                 }
-                var full_response = sb.ToString().Trim();
-                ChatHistory.Add(new ChatHistoryItem(EChatHistoryItemType.Response, full_response));
+                var last_in_chatHistory = ChatHistory.LastOrDefault();
+                if (last_in_chatHistory != null && last_in_chatHistory.Type == EChatHistoryItemType.PrefilledResponse)
+                {
+                    var full_response = sb.ToString();
+                    var new_chatHistory_item = new ChatHistoryItem(
+                        EChatHistoryItemType.Response,
+                        last_in_chatHistory.Text + full_response);
+                    ChatHistory[ChatHistory.Count - 1] = new_chatHistory_item;
+                }
+                else
+                {
+                    var full_response = sb.ToString().Trim();
+                    ChatHistory.Add(new ChatHistoryItem(EChatHistoryItemType.Response, full_response));
+                }
                 return true;
             }
             catch (Exception ex)
