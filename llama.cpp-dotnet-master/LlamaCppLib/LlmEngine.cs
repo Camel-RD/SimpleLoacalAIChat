@@ -4,6 +4,7 @@ using System.Text;
 
 using static LlamaCppLib.Native;
 using static LlamaCppLib.Interop;
+using System.Diagnostics;
 
 namespace LlamaCppLib
 {
@@ -66,6 +67,11 @@ namespace LlamaCppLib
             GC.SuppressFinalize(this);
         }
 
+        void LLamaLogCallback(LLamaLogLevel level, string message)
+        {
+            Debug.WriteLine(message);
+        }
+
         public unsafe void LoadModel(string modelPath, LlmModelOptions? modelOptions = default, Action<float>? progressCallback = default, bool waitForMainLoop = true)
         {
             if (_model.Created)
@@ -73,6 +79,8 @@ namespace LlamaCppLib
 
             if (modelOptions != default)
                 _modelOptions = modelOptions;
+
+            Native.llama_log_set(LLamaLogCallback, null);
 
             if (!_backend.Created)
             {
@@ -82,6 +90,12 @@ namespace LlamaCppLib
                     llama_numa_init(_engineOptions.NumaOptimizations ? ggml_numa_strategy.GGML_NUMA_STRATEGY_DISTRIBUTE : ggml_numa_strategy.GGML_NUMA_STRATEGY_DISABLED);
                 }, llama_backend_free);
             }
+
+            //Native.ggml_backend_load_all();
+            var libfolder = Native.LlamaCppLibFolder;
+            Native.ggml_backend_load_all_from_path(libfolder);
+            //var libcuda = Path.Combine(libfolder, "ggml-cuda.dll");
+            //IntPtr backend = Native.ggml_backend_load(libcuda);
 
             var mparams = llama_model_default_params();
             mparams.n_gpu_layers = _modelOptions.GpuLayers;

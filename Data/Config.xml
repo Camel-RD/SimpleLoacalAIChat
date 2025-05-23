@@ -128,10 +128,10 @@
         <TemplateName>Phi3</TemplateName>
         <SamplerName>simple-1</SamplerName>
         <SystemPrompt>You are a helpful AI assistant.</SystemPrompt>
-        <GpuLayers>50</GpuLayers>
+        <GpuLayers>25</GpuLayers>
         <MainGpu>0</MainGpu>
         <Seed>-1</Seed>
-        <ContextLength>10000</ContextLength>
+        <ContextLength>100000</ContextLength>
         <BatchSize>512</BatchSize>
         <ThreadCount>4</ThreadCount>
         <BatchThreadCount>1</BatchThreadCount>
@@ -218,7 +218,7 @@
         <TemplateName>ChatML</TemplateName>
         <SamplerName>Coder</SamplerName>
         <SystemPrompt>You are a helpful assistant.</SystemPrompt>
-        <GpuLayers>15</GpuLayers>
+        <GpuLayers>20</GpuLayers>
         <MainGpu>0</MainGpu>
         <Seed>-1</Seed>
         <ContextLength>8000</ContextLength>
@@ -278,7 +278,7 @@
         <TemplateName>Gemma 2</TemplateName>
         <SamplerName>Gemma 3</SamplerName>
         <SystemPrompt>You are a helpful AI assistant.</SystemPrompt>
-        <GpuLayers>15</GpuLayers>
+        <GpuLayers>20</GpuLayers>
         <MainGpu>0</MainGpu>
         <Seed>9999999</Seed>
         <ContextLength>4096</ContextLength>

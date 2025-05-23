@@ -18,6 +18,7 @@ namespace LlamaCppLib
     // llama.h
 
     using unsafe llama_progress_callback = delegate* unmanaged[Cdecl]<float, void*, sbyte>;
+    using static System.Net.Mime.MediaTypeNames;
 
     public static unsafe partial class Native
     {
@@ -26,6 +27,16 @@ namespace LlamaCppLib
 #elif LINUX || MACOS
         private const string LibName = $"{nameof(LlamaCppLib)}/libllama";
 #endif
+
+        private const string GgmlLibName = $"{nameof(LlamaCppLib)}/ggml";
+        public static readonly string LlamaCppLibFolder = GetLlamaCppLibFolder();
+
+        static string GetLlamaCppLibFolder()
+        {
+            string? appfolder = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+            var libfolder = Path.Combine(appfolder, "LlamaCppLib");
+            return libfolder;
+        }
 
         // ggml.h
 
@@ -62,12 +73,9 @@ namespace LlamaCppLib
             GGML_TYPE_F64 = 28,
             GGML_TYPE_IQ1_M = 29,
             GGML_TYPE_BF16 = 30,
-            GGML_TYPE_Q4_0_4_4 = 31,
-            GGML_TYPE_Q4_0_4_8 = 32,
-            GGML_TYPE_Q4_0_8_8 = 33,
             GGML_TYPE_TQ1_0 = 34,
             GGML_TYPE_TQ2_0 = 35,
-            GGML_TYPE_COUNT,
+            GGML_TYPE_COUNT = 39,
         }
 
         public enum ggml_numa_strategy
@@ -98,7 +106,8 @@ namespace LlamaCppLib
             LLAMA_ROPE_SCALING_TYPE_NONE = 0,
             LLAMA_ROPE_SCALING_TYPE_LINEAR = 1,
             LLAMA_ROPE_SCALING_TYPE_YARN = 2,
-            LLAMA_ROPE_SCALING_TYPE_MAX_VALUE = LLAMA_ROPE_SCALING_TYPE_YARN,
+			LLAMA_ROPE_SCALING_TYPE_LONGROPE = 3,
+            LLAMA_ROPE_SCALING_TYPE_MAX_VALUE = LLAMA_ROPE_SCALING_TYPE_LONGROPE,
         }
 
         public enum _llama_pooling_type
@@ -168,6 +177,8 @@ namespace LlamaCppLib
         {
             public void* devices;
 
+            public void* tensor_buft_overrides;
+
             public int n_gpu_layers;
             public llama_split_mode split_mode;
 
@@ -216,14 +227,15 @@ namespace LlamaCppLib
             public ggml_type type_k;
             public ggml_type type_v;
 
-            public sbyte logits_all;
+            public ggml_abort_callback abort_callback;
+            public void* abort_callback_data;
+
             public sbyte embeddings;
             public sbyte offload_kqv;
             public sbyte flash_attn;
             public sbyte no_perf;
-
-            public ggml_abort_callback abort_callback;
-            public void* abort_callback_data;
+            public sbyte op_offload;
+            public sbyte swa_full;
         }
 
         [StructLayout(LayoutKind.Sequential)]
@@ -680,5 +692,34 @@ namespace LlamaCppLib
         public static partial int llama_sampler_sample(
             llama_sampler smpl,
             llama_context ctx, int idx);
+
+        public enum LLamaLogLevel
+        {
+            None = 0,
+            Debug = 1,
+            Info = 2,
+            Warning = 3,
+            Error = 4,
+            Continue = 5,
+        }
+
+        public delegate void LLamaLogCallback(LLamaLogLevel level, string message);
+
+        [LibraryImport(LibName)]
+        public static partial void llama_log_set(LLamaLogCallback? logCallback, void* user_date);
+
+        [LibraryImport(GgmlLibName)]
+        public static partial void ggml_backend_load_all();
+
+        [LibraryImport(GgmlLibName)]
+        public static partial void ggml_backend_load_all_from_path(
+            [MarshalAs(UnmanagedType.LPStr)] string dir_path);
+
+        [LibraryImport(GgmlLibName)]
+        public static partial IntPtr ggml_backend_load([MarshalAs(UnmanagedType.LPStr)] string path);
+
+        [LibraryImport(GgmlLibName)]
+        public static partial void ggml_backend_unload(IntPtr reg);
+
     }
 }
